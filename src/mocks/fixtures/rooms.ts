@@ -1,0 +1,248 @@
+import { RoomView } from '@/domain/contracts';
+
+// Local SVG placeholder generator to guarantee robust, offline image loading without copyright infringement
+const createSvgPlaceholder = (title: string, color: string = '#0D9488') =>
+  `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="450" viewBox="0 0 600 450"><rect width="600" height="450" fill="%23f1f5f9"/><rect x="20" y="20" width="560" height="410" rx="12" fill="%23ffffff" stroke="%23cbd5e1" stroke-width="2"/><circle cx="300" cy="180" r="48" fill="${encodeURIComponent(color)}" opacity="0.15"/><path d="M280 180 L320 180 M300 160 L300 200" stroke="${encodeURIComponent(color)}" stroke-width="4" stroke-linecap="round"/><text x="300" y="260" font-family="sans-serif" font-size="18" font-weight="600" fill="%23334155" text-anchor="middle">${encodeURIComponent(title)}</text><text x="300" y="290" font-family="sans-serif" font-size="13" fill="%2364748b" text-anchor="middle">Ảnh minh họa mô phỏng (Demo)</text></svg>`;
+
+export const MOCK_ROOMS: RoomView[] = [
+  {
+    id: 'demo-room-01',
+    title: 'Phòng trọ ban công thoáng mát gần Bách Khoa',
+    priceMonthlyVnd: 2800000,
+    areaM2: 22,
+    imageUrls: [
+      createSvgPlaceholder('Phòng trọ 22m² - Lý Thường Kiệt', '#0D9488'),
+      createSvgPlaceholder('Ban công & Cửa sổ lớn', '#0F766E'),
+    ],
+    addressLabel: 'Hẻm 497 Hòa Hảo, Phường 7, Quận 10, TP.HCM',
+    latitude: 10.7635,
+    longitude: 106.6625, // ~1.1 km to HCMUT LTK
+    locationAccuracy: 'approximate',
+    amenities: ['air_conditioner', 'wifi', 'private_bathroom', 'balcony', 'parking'],
+    petAllowed: true,
+    listingStatus: 'unknown',
+    sourceKind: 'demo',
+    sourceUrl: null,
+    lastCheckedAt: '2026-10-10T08:30:00Z',
+    utilitiesMonthlyEstimateVnd: 350000,
+  },
+  {
+    id: 'demo-room-02',
+    title: 'Phòng studio full nội thất hẻm xe hơi Tô Hiến Thành',
+    priceMonthlyVnd: 3200000,
+    areaM2: 26,
+    imageUrls: [
+      createSvgPlaceholder('Studio 26m² - Tô Hiến Thành', '#2563EB'),
+      createSvgPlaceholder('Góc học tập & Bếp mini', '#1D4ED8'),
+    ],
+    addressLabel: '286 Tô Hiến Thành, Phường 15, Quận 10, TP.HCM',
+    latitude: 10.7765,
+    longitude: 106.6628, // ~0.7 km to HCMUT LTK
+    locationAccuracy: 'approximate',
+    amenities: ['air_conditioner', 'wifi', 'private_bathroom', 'parking', 'kitchen'],
+    petAllowed: false,
+    listingStatus: 'unknown',
+    sourceKind: 'demo',
+    sourceUrl: null,
+    lastCheckedAt: '2026-10-09T14:15:00Z',
+    utilitiesMonthlyEstimateVnd: 450000,
+  },
+  {
+    id: 'demo-room-03',
+    title: 'Phòng gác lửng giá sinh viên gần cổng sau Bách Khoa',
+    priceMonthlyVnd: 2300000,
+    areaM2: 18,
+    imageUrls: [
+      createSvgPlaceholder('Gác lửng 18m² - Lữ Gia', '#D97706'),
+    ],
+    addressLabel: 'Đường Lữ Gia, Phường 15, Quận 11, TP.HCM',
+    latitude: 10.7705,
+    longitude: 106.6540, // ~0.5 km to HCMUT LTK
+    locationAccuracy: 'approximate',
+    amenities: ['wifi', 'parking', 'private_bathroom'],
+    petAllowed: false,
+    listingStatus: 'unknown',
+    sourceKind: 'demo',
+    sourceUrl: null,
+    lastCheckedAt: '2026-10-11T02:00:00Z',
+    utilitiesMonthlyEstimateVnd: 250000,
+  },
+  {
+    id: 'demo-room-04',
+    title: 'Phòng ở ghép ký túc xá tư nhân sạch sẽ tiện nghi',
+    priceMonthlyVnd: 1600000,
+    areaM2: 35,
+    imageUrls: [
+      createSvgPlaceholder('KTX cao cấp - Thành Thái', '#059669'),
+    ],
+    addressLabel: 'Thành Thái, Phường 14, Quận 10, TP.HCM',
+    latitude: 10.7712,
+    longitude: 106.6610, // ~0.4 km to HCMUT LTK
+    locationAccuracy: 'approximate',
+    amenities: ['air_conditioner', 'wifi', 'parking', 'kitchen'],
+    petAllowed: false,
+    listingStatus: 'unknown',
+    sourceKind: 'demo',
+    sourceUrl: null,
+    lastCheckedAt: '2026-10-08T10:00:00Z',
+    utilitiesMonthlyEstimateVnd: 150000,
+  },
+  {
+    id: 'demo-room-05',
+    title: 'Phòng trọ có máy lạnh, giờ giấc tự do hẻm Ba Tháng Hai',
+    priceMonthlyVnd: 2900000,
+    areaM2: 20,
+    imageUrls: [
+      createSvgPlaceholder('Phòng 20m² - 3 Tháng 2', '#7C3AED'),
+    ],
+    addressLabel: 'Đường 3 Tháng 2, Phường 14, Quận 10, TP.HCM',
+    latitude: 10.7675,
+    longitude: 106.6590, // ~0.5 km to HCMUT LTK
+    locationAccuracy: 'approximate',
+    amenities: ['air_conditioner', 'wifi', 'private_bathroom', 'parking'],
+    petAllowed: true,
+    listingStatus: 'unknown',
+    sourceKind: 'demo',
+    sourceUrl: null,
+    lastCheckedAt: '2026-10-10T11:20:00Z',
+    utilitiesMonthlyEstimateVnd: null, // Unknown utilities
+  },
+  {
+    id: 'demo-room-06',
+    title: 'Phòng trọ quận 10 giá tốt (chưa có tọa độ chính xác)',
+    priceMonthlyVnd: 2400000,
+    areaM2: 19,
+    imageUrls: [
+      createSvgPlaceholder('Phòng trọ Hẻm CMT8', '#64748B'),
+    ],
+    addressLabel: 'Khu vực CMT8, Quận 10 (chưa rõ hẻm cụ thể)',
+    latitude: null, // MISSING COORDINATES TYPE
+    longitude: null,
+    locationAccuracy: 'unknown',
+    amenities: ['wifi', 'parking'],
+    petAllowed: null, // UNKNOWN PET
+    listingStatus: 'unknown',
+    sourceKind: 'demo',
+    sourceUrl: null,
+    lastCheckedAt: '2026-10-05T09:00:00Z',
+    utilitiesMonthlyEstimateVnd: null,
+  },
+  {
+    id: 'demo-room-07',
+    title: 'Căn hộ dịch vụ cao cấp view Landmark gần Hoàng Văn Thụ',
+    priceMonthlyVnd: 4800000, // OVER BUDGET for S01/S04
+    areaM2: 32,
+    imageUrls: [
+      createSvgPlaceholder('CHDV 32m² cao cấp', '#DC2626'),
+    ],
+    addressLabel: 'Hoàng Văn Thụ, Phường 4, Tân Bình, TP.HCM',
+    latitude: 10.7930,
+    longitude: 106.6580, // ~2.3 km (outside 2km radius)
+    locationAccuracy: 'approximate',
+    amenities: ['air_conditioner', 'wifi', 'private_bathroom', 'balcony', 'kitchen', 'parking'],
+    petAllowed: true,
+    listingStatus: 'unknown',
+    sourceKind: 'demo',
+    sourceUrl: null,
+    lastCheckedAt: '2026-10-10T16:00:00Z',
+    utilitiesMonthlyEstimateVnd: 500000,
+  },
+  {
+    id: 'demo-room-08',
+    title: 'Phòng trọ hẻm Lý Thường Kiệt không hình ảnh',
+    priceMonthlyVnd: 2600000,
+    areaM2: null, // MISSING AREA TYPE
+    imageUrls: [], // NO IMAGE TYPE
+    addressLabel: 'Hẻm 266 Lý Thường Kiệt, Phường 14, Quận 10',
+    latitude: 10.7745,
+    longitude: 106.6585, // ~0.3 km to HCMUT LTK
+    locationAccuracy: 'approximate',
+    amenities: ['wifi', 'private_bathroom'],
+    petAllowed: null,
+    listingStatus: 'unknown',
+    sourceKind: 'demo',
+    sourceUrl: null,
+    lastCheckedAt: '2026-10-07T12:00:00Z',
+    utilitiesMonthlyEstimateVnd: 300000,
+  },
+  {
+    id: 'demo-room-09',
+    title: 'Phòng trọ sinh viên gần Đại học Bách Khoa cơ sở Dĩ An',
+    priceMonthlyVnd: 1800000,
+    areaM2: 24,
+    imageUrls: [
+      createSvgPlaceholder('Phòng trọ Làng Đại Học Dĩ An', '#0D9488'),
+    ],
+    addressLabel: 'Đường vành đai ĐHQG, Phường Đông Hòa, Dĩ An, Bình Dương',
+    latitude: 10.8835,
+    longitude: 106.8025, // ~0.5 km to HCMUT DA
+    locationAccuracy: 'approximate',
+    amenities: ['wifi', 'private_bathroom', 'parking'],
+    petAllowed: true,
+    listingStatus: 'unknown',
+    sourceKind: 'demo',
+    sourceUrl: null,
+    lastCheckedAt: '2026-10-10T07:15:00Z',
+    utilitiesMonthlyEstimateVnd: 200000,
+  },
+  {
+    id: 'demo-room-10',
+    title: 'Phòng mini máy lạnh cạnh cổng Bách Khoa Dĩ An',
+    priceMonthlyVnd: 2200000,
+    areaM2: 20,
+    imageUrls: [
+      createSvgPlaceholder('Phòng có máy lạnh - KTX Bách Khoa DA', '#0284C7'),
+    ],
+    addressLabel: 'Khu phố Tân Lập, Dĩ An, Bình Dương',
+    latitude: 10.8785,
+    longitude: 106.8080, // ~0.4 km to HCMUT DA
+    locationAccuracy: 'approximate',
+    amenities: ['air_conditioner', 'wifi', 'private_bathroom', 'parking'],
+    petAllowed: false,
+    listingStatus: 'unknown',
+    sourceKind: 'demo',
+    sourceUrl: null,
+    lastCheckedAt: '2026-10-09T18:00:00Z',
+    utilitiesMonthlyEstimateVnd: 300000,
+  },
+  {
+    id: 'demo-room-11',
+    title: 'Phòng trọ xa trường Bách Khoa LTK (Quận Tân Phú)',
+    priceMonthlyVnd: 2100000,
+    areaM2: 20,
+    imageUrls: [
+      createSvgPlaceholder('Phòng trọ Tân Phú', '#64748B'),
+    ],
+    addressLabel: 'Đường Lũy Bán Bích, Tân Phú, TP.HCM',
+    latitude: 10.7780,
+    longitude: 106.6250, // ~3.6 km to HCMUT LTK (OUTSIDE RADIUS 2km)
+    locationAccuracy: 'approximate',
+    amenities: ['air_conditioner', 'wifi'],
+    petAllowed: true,
+    listingStatus: 'unknown',
+    sourceKind: 'demo',
+    sourceUrl: null,
+    lastCheckedAt: '2026-10-06T10:00:00Z',
+    utilitiesMonthlyEstimateVnd: 250000,
+  },
+  {
+    id: 'demo-room-12',
+    title: 'Phòng trọ nữ có máy lạnh, bếp riêng Lữ Gia',
+    priceMonthlyVnd: 2700000,
+    areaM2: 21,
+    imageUrls: [
+      createSvgPlaceholder('Phòng bếp riêng Lữ Gia', '#EC4899'),
+    ],
+    addressLabel: 'Hẻm 70 Lữ Gia, Phường 15, Quận 11, TP.HCM',
+    latitude: 10.7718,
+    longitude: 106.6532, // ~0.5 km to HCMUT LTK
+    locationAccuracy: 'approximate',
+    amenities: ['air_conditioner', 'wifi', 'private_bathroom', 'kitchen', 'parking'],
+    petAllowed: false,
+    listingStatus: 'unknown',
+    sourceKind: 'demo',
+    sourceUrl: null,
+    lastCheckedAt: '2026-10-11T05:40:00Z',
+    utilitiesMonthlyEstimateVnd: 320000,
+  },
+];
