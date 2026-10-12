@@ -175,3 +175,49 @@ def search_rooms_tool(campus_id: str, max_price_vnd: int, max_distance_km: float
         return service.search_rooms(filters)
 ```
 No HTTP calls or duplicate SQL queries are required.
+
+---
+
+## 8. Data Ingestion v1 Module
+
+The **Data Ingestion v1** module manages authorized discovery, extraction, snapshot versioning, and profiling of rental listings from Trọ Mới (`https://tromoi.com/tim-tro-tai-ha-noi`) for the Hà Nội rental market.
+
+### Architecture & Isolation
+- **Ingestion Data Isolation**: Stored strictly in dedicated ingestion tables (`ingestion_runs`, `raw_listings`, `raw_listing_snapshots`, `raw_listing_images`, `ingestion_errors`). Canonical `rooms` and `campuses` tables remain isolated and unpolluted.
+- **Pydantic Raw Schema (`RawListingPayload v1.0.0`)**: Faithful representation preserving conflicting raw values (`header_price_raw` vs `description_price_mentions_raw`), old and new administrative addresses, full raw description, tags, surroundings, and image manifests.
+- **Idempotency & Content Hashing**: `content_sha256` is computed on stable source fields (excluding timestamps/retrieval metadata). Duplicate crawls update visit timestamps without creating duplicate snapshots.
+- **Media & Video Policy**:
+  - Image downloads are rights-gated (`permission_status`: `allowed`, `download_status`: `not_attempted`, `downloaded`, `failed`, `skipped`).
+  - Downloads enforce byte limits (8MB max), MIME magic-bytes validation, and atomic storage.
+  - Video asset downloading is strictly prohibited (captures `video_present` and link metadata only).
+- **Privacy**: Contact details (landlord phone numbers and personal names) are automatically redacted and excluded by default.
+
+### CLI Operations
+The ingestion CLI is located at `app/ingestion/cli.py`:
+
+```bash
+# Dry-run: discover listing URLs without writing to database
+python -m app.ingestion.cli --dry-run
+
+# Run bounded canary collection (e.g. 5 listings, metadata-only)
+python -m app.ingestion.cli --scope hanoi --max-listings 5 --no-images
+
+# Run authorized collection with image downloads
+python -m app.ingestion.cli --scope hanoi --max-listings 20 --images
+
+# Resume an interrupted run
+python -m app.ingestion.cli --resume
+
+# Generate profiling quality reports only
+python -m app.ingestion.cli --profile-only --output-dir reports
+```
+
+### Operational & Profiling Reports (`reports/`)
+- `crawl_summary.json`: Ingestion run metrics and overall field completeness.
+- `field_coverage.csv`: Field-by-field completeness percentages across snapshots.
+- `price_conflicts.csv`: Flagged listings where header price differs from description mentions.
+- `missing_fields.csv`: Flagged listings missing core fields.
+- `image_coverage.csv`: Image count, cover photo availability, and video indicators.
+- `geo_coverage.csv`: Coordinate precision evidence vs address-only listings.
+- `duplicate_candidates.csv`: Listings sharing identical titles or addresses.
+- `errors.csv`: Detailed log of any network or parsing errors.

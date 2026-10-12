@@ -1,0 +1,96 @@
+{
+  "schema_version": "1.0.0",
+  "source": {
+    "site": "tromoi",
+    "url": null,
+    "canonical_url": null,
+    "source_listing_id": null,
+    "category_url": "https://tromoi.com/tim-tro-tai-ha-noi",
+    "scope_city": "ha_noi"
+  },
+  "fetch": {
+    "fetched_at": null,
+    "http_status": null,
+    "final_url": null,
+    "content_type": null,
+    "etag": null,
+    "last_modified": null,
+    "html_sha256": null,
+    "parser_version": "1.0.0"
+  },
+  "listing": {
+    "title_raw": "PHÒNG FULL NỘI THẤT TẠI ĐƯỜNG Ý LA, TDP ĐOÀN KẾT, P. DƯƠNG NỘI, Q. HÀ ĐÔNG, HÀ NỘI",
+    "category_raw": "Phòng trọ",
+    "badges_raw": [
+      "Hot",
+      "Phòng trọ",
+      "Hà Nội"
+    ],
+    "posted_date_raw": "25-09-2026",
+    "availability_raw": "Liên hệ chủ trọ",
+    "units_count_raw": "1"
+  },
+  "pricing": {
+    "header_price_raw": "2,7 triệu/tháng",
+    "description_price_mentions_raw": [
+      "Giá thuê: 3 triệu/tháng"
+    ],
+    "fee_mentions_raw": [
+      "Điện 4.000đ/số",
+      "Nước 30.000đ/m³",
+      "Dịch vụ rác/vệ sinh 100.000đ/phòng"
+    ]
+  },
+  "location": {
+    "address_new_raw": "Số 27, Ngách 6, Ngõ 138, Phường Dương Nội, Thành phố Hà Nội",
+    "address_old_raw": "Số 27, Ngách 6, Ngõ 138, đường Ý La, Dương Nội, Hà Đông, Hà Nội",
+    "address_description_raw": "Số 27, Ngách 6, Ngõ 138 đường Ý La, P. Dương Nội, Hà Đông, Hà Nội",
+    "map_href_raw": null,
+    "source_coordinates": null
+  },
+  "attributes": {
+    "amenity_tags_raw": [
+      "Wifi",
+      "Vệ sinh trong",
+      "Phòng tắm",
+      "Bình nóng lạnh",
+      "Kệ bếp",
+      "Điều hòa",
+      "Giường nệm",
+      "Tủ áo quần",
+      "Ban công/sân thượng",
+      "Bãi để xe riêng",
+      "Camera an ninh"
+    ],
+    "target_tenants_raw": [
+      "Đi học",
+      "Đi làm"
+    ],
+    "surroundings_tags_raw": [
+      "Chợ",
+      "Siêu thị",
+      "Trường học",
+      "Công viên"
+    ],
+    "other_tags_raw": []
+  },
+  "content": {
+    "description_text_raw": "PHÒNG TRỌ MỚI 100% – GẦN AEON MALL HÀ ĐÔNG – CHỈ CÒN 1 PHÒNG\nĐịa chỉ: Số 27, Ngách 6, Ngõ 138 đường Ý La, P. Dương Nội, Hà Đông, Hà Nội\nGiá thuê: 3 triệu/tháng\nTầng 2, có 2 ban công, diện tích khoảng 20–25m².\nTiện nghi phòng: giường gỗ, tủ kịch trần; bếp riêng, kệ bếp và bồn rửa; điều hòa, bình nóng lạnh; WC riêng, cửa sổ thoáng.\nChi phí: Điện 4.000đ/số | Nước 30.000đ/m³ | Dịch vụ rác/vệ sinh 100.000đ/phòng",
+    "description_html_raw": null,
+    "sections_raw": {}
+  },
+  "media": {
+    "images": [],
+    "video_present": true,
+    "video_page_url": null
+  },
+  "capture": {
+    "field_sources": {},
+    "warnings": [
+      "price_mentions_conflict",
+      "sample_from_user_screenshots_not_live_crawl",
+      "contact_details_intentionally_excluded"
+    ],
+    "extra_raw": {}
+  }
+}
