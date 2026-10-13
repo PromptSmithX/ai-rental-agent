@@ -78,7 +78,37 @@ def suggest_filter_relaxations(
                 )
             )
 
-    # 4. Proposal D: Relax both budget and distance if single dimension relaxation yields 0
+    # 4. Proposal D: Relax pet restriction if pet_allowed is True
+    if current_filters.pet_allowed is True:
+        relaxed_pet = deepcopy(current_filters)
+        relaxed_pet.pet_allowed = None
+        real_result = repo.search_rooms(relaxed_pet)
+        if real_result.total_matched > 0:
+            suggestions.append(
+                RelaxationSuggestion(
+                    action_type="relax_pet_policy",
+                    description=f"Bỏ tiêu chí cho phép nuôi thú cưng ({real_result.total_matched} phòng phù hợp)",
+                    proposed_filters=relaxed_pet,
+                    matched_count=real_result.total_matched,
+                )
+            )
+
+    # 5. Proposal E: Relax min area if min_area_m2 is set
+    if current_filters.min_area_m2 is not None and current_filters.min_area_m2 > 15:
+        relaxed_area = deepcopy(current_filters)
+        relaxed_area.min_area_m2 = max(15.0, current_filters.min_area_m2 - 5.0)
+        real_result = repo.search_rooms(relaxed_area)
+        if real_result.total_matched > 0:
+            suggestions.append(
+                RelaxationSuggestion(
+                    action_type="lower_min_area",
+                    description=f"Giảm diện tích tối thiểu xuống {relaxed_area.min_area_m2:.0f}m² ({real_result.total_matched} phòng phù hợp)",
+                    proposed_filters=relaxed_area,
+                    matched_count=real_result.total_matched,
+                )
+            )
+
+    # 6. Proposal F: Relax both budget and distance if single dimension relaxation yields 0
     if not suggestions and current_filters.max_price_vnd is not None:
         for p_mult in [2, 3, 4]:
             relaxed_combo = deepcopy(current_filters)

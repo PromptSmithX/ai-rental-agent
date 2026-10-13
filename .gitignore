@@ -110,3 +110,5 @@ lerna-debug.log*
 ehthumbs.db
 Thumbs.db
 Desktop.ini
+
+graphify-out/
