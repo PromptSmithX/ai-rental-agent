@@ -6,6 +6,8 @@ from app.ai.schemas.intent import UserIntent
 from app.ai.schemas.state import AgentGraphState
 from app.ai.tools.compare_tool import RoomComparisonResult
 from app.ai.tools.relaxation_tool import RelaxationSuggestion
+from app.ai.llm.factory import get_response_generator
+from app.ai.llm.client import OpenAITimeoutException, OpenAIProviderException, OpenAIConfigurationError
 from app.ai.llm.mock_llm import MockResponseGenerator
 
 
@@ -36,16 +38,40 @@ def generate_response_node(state: AgentGraphState) -> Dict[str, Any]:
     )
     clarification_q = state.get("clarification_question")
 
-    answer = MockResponseGenerator.generate(
-        user_message=user_msg,
-        intent=intent,
-        filters=filters,
-        search_result=search_result,
-        detail_result=detail_result,
-        comparison_result=comparison_result,
-        relaxation_options=relaxation_options,
-        clarification_question=clarification_q,
-    )
+    generator = get_response_generator()
+    try:
+        answer = generator.generate(
+            user_message=user_msg,
+            intent=intent,
+            filters=filters,
+            search_result=search_result,
+            detail_result=detail_result,
+            comparison_result=comparison_result,
+            relaxation_options=relaxation_options,
+            clarification_question=clarification_q,
+        )
+    except (OpenAITimeoutException, OpenAIProviderException, OpenAIConfigurationError) as e:
+        events.append({
+            "id": f"evt-{run_id}-gen-warning",
+            "runId": run_id,
+            "type": "tool_failed",
+            "status": "error",
+            "label": "OpenAI gặp sự cố, tự động dùng bộ sinh phản hồi dự phòng",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "durationMs": 10,
+            "isSimulation": True,
+            "details": {"error": str(e)},
+        })
+        answer = MockResponseGenerator.generate(
+            user_message=user_msg,
+            intent=intent,
+            filters=filters,
+            search_result=search_result,
+            detail_result=detail_result,
+            comparison_result=comparison_result,
+            relaxation_options=relaxation_options,
+            clarification_question=clarification_q,
+        )
 
     # Determine referenced room IDs for the UI
     referenced_ids = []
