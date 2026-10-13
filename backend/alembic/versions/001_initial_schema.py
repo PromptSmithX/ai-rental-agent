@@ -23,6 +23,9 @@ def upgrade() -> None:
     if conn.dialect.name == "postgresql":
         op.execute("CREATE EXTENSION IF NOT EXISTS postgis")
 
+    is_pg = conn.dialect.name == "postgresql"
+    geom_col = Geography(geometry_type='POINT', srid=4326) if is_pg else sa.String(255)
+
     # 1. Create campuses table
     op.create_table(
         'campuses',
@@ -31,7 +34,7 @@ def upgrade() -> None:
         sa.Column('campus_name', sa.String(length=255), nullable=False),
         sa.Column('latitude', sa.Float(), nullable=False),
         sa.Column('longitude', sa.Float(), nullable=False),
-        sa.Column('geom', Geography(geometry_type='POINT', srid=4326), nullable=True),
+        sa.Column('geom', geom_col, nullable=True),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
     )
@@ -47,7 +50,7 @@ def upgrade() -> None:
         sa.Column('address_label', sa.String(length=500), nullable=False),
         sa.Column('latitude', sa.Float(), nullable=True),
         sa.Column('longitude', sa.Float(), nullable=True),
-        sa.Column('geom', Geography(geometry_type='POINT', srid=4326), nullable=True),
+        sa.Column('geom', geom_col, nullable=True),
         sa.Column('location_accuracy', sa.String(length=32), nullable=False, server_default='unknown'),
         sa.Column('amenities', sa.JSON(), nullable=False),
         sa.Column('pet_allowed', sa.Boolean(), nullable=True),
