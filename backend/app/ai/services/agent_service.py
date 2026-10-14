@@ -1,8 +1,9 @@
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Generator, List, Optional
 from app.schemas.search import SearchFilters, SearchResult
-from app.ai.schemas.events import AgentEventSchema, AgentEventType, EventStatus
+from app.ai.schemas.events import AgentEventSchema
 from app.ai.schemas.responses import AgentChatResponse, ChatMessageDTO
+from app.ai.services.event_mapper import EventMapper
 from app.ai.graph.builder import agent_graph
 
 
@@ -12,49 +13,15 @@ class AgentService:
     def __init__(self, graph: Optional[Any] = None):
         self.graph = graph if graph is not None else agent_graph
 
-    def run_turn(
+    def _build_response(
         self,
+        final_state: Dict[str, Any],
         thread_id: str,
-        message: str,
-        current_filters: Optional[SearchFilters] = None,
+        run_id: str,
+        current_filters: Optional[SearchFilters],
+        now: str,
     ) -> AgentChatResponse:
-        run_id = f"run-{int(datetime.now().timestamp() * 1000)}"
-        now = datetime.now(timezone.utc).isoformat()
-
-        # 1. Initial run_started event
-        init_event: Dict[str, Any] = {
-            "id": f"evt-{run_id}-start",
-            "runId": run_id,
-            "type": "run_started",
-            "status": "success",
-            "label": "Khởi tạo tác vụ tìm kiếm",
-            "timestamp": now,
-            "durationMs": 15,
-            "isSimulation": True,
-            "details": {
-                "userMessage": message,
-                "threadId": thread_id,
-            },
-        }
-
-        # 2. Prepare state
-        input_state: Dict[str, Any] = {
-            "thread_id": thread_id,
-            "user_message": message,
-            "run_id": run_id,
-            "events": [init_event],
-        }
-
-        if current_filters:
-            input_state["canonical_filters"] = current_filters.model_dump()
-            input_state["active_campus_id"] = current_filters.campus_id
-
-        config = {"configurable": {"thread_id": thread_id}}
-
-        # 3. Invoke compiled StateGraph
-        final_state = self.graph.invoke(input_state, config=config)
-
-        # 4. Extract results
+        """Extract and structure final graph state into AgentChatResponse."""
         messages = final_state.get("messages", [])
         last_msg = messages[-1] if messages else {
             "id": f"asst-{int(datetime.now().timestamp() * 1000)}",
@@ -91,17 +58,7 @@ class AgentService:
             filter_patch = final_filters
 
         events = [
-            AgentEventSchema(
-                id=evt.get("id", f"evt-{run_id}"),
-                run_id=evt.get("runId", run_id),
-                type=AgentEventType(evt["type"]),
-                status=EventStatus(evt.get("status", "success")),
-                label=evt.get("label", ""),
-                timestamp=evt.get("timestamp", now),
-                duration_ms=evt.get("durationMs"),
-                is_simulation=evt.get("isSimulation", True),
-                details=evt.get("details", {}),
-            )
+            EventMapper.to_schema(evt, run_id)
             for evt in final_state.get("events", [])
         ]
 
@@ -116,6 +73,173 @@ class AgentService:
             clarification_question=final_state.get("clarification_question"),
             is_simulation=True,
         )
+
+    def run_turn(
+        self,
+        thread_id: str,
+        message: str,
+        current_filters: Optional[SearchFilters] = None,
+    ) -> AgentChatResponse:
+        run_id = f"run-{int(datetime.now().timestamp() * 1000)}"
+        now = datetime.now(timezone.utc).isoformat()
+
+        # 1. Initial run_started event
+        init_event: Dict[str, Any] = {
+            "id": f"evt-{run_id}-start",
+            "runId": run_id,
+            "type": "run_started",
+            "status": "success",
+            "label": "Khởi tạo tác vụ tìm kiếm",
+            "timestamp": now,
+            "durationMs": 15,
+            "isSimulation": True,
+            "details": {
+                "userMessage": message,
+                "threadId": thread_id,
+            },
+        }
+
+        # 2. Prepare state with ephemeral reset
+        input_state: Dict[str, Any] = {
+            "thread_id": thread_id,
+            "user_message": message,
+            "run_id": run_id,
+            "events": [init_event],
+            "search_result": None,
+            "detail_result": None,
+            "comparison_result": None,
+            "relaxation_options": [],
+            "needs_clarification": False,
+            "clarification_question": None,
+            "final_response_text": None,
+            "status": "extracting",
+            "error": None,
+        }
+
+        if current_filters:
+            input_state["canonical_filters"] = current_filters.model_dump()
+            input_state["active_campus_id"] = current_filters.campus_id
+
+        config = {"configurable": {"thread_id": thread_id}}
+
+        # 3. Invoke compiled StateGraph
+        final_state = self.graph.invoke(input_state, config=config)
+
+        # 4. Extract results
+        return self._build_response(
+            final_state=final_state,
+            thread_id=thread_id,
+            run_id=run_id,
+            current_filters=current_filters,
+            now=now,
+        )
+
+    def stream_turn(
+        self,
+        thread_id: str,
+        message: str,
+        current_filters: Optional[SearchFilters] = None,
+    ) -> Generator[str, None, None]:
+        """Stream execution events and final AgentReply via Server-Sent Events (SSE)."""
+        run_id = f"run-{int(datetime.now().timestamp() * 1000)}"
+        now = datetime.now(timezone.utc).isoformat()
+
+        init_event: Dict[str, Any] = {
+            "id": f"evt-{run_id}-start",
+            "runId": run_id,
+            "type": "run_started",
+            "status": "success",
+            "label": "Khởi tạo tác vụ tìm kiếm",
+            "timestamp": now,
+            "durationMs": 15,
+            "isSimulation": True,
+            "details": {
+                "userMessage": message,
+                "threadId": thread_id,
+            },
+        }
+
+        # 1. Emit run_started immediately
+        init_schema = EventMapper.to_schema(init_event, run_id)
+        yield EventMapper.format_sse("agent_event", init_schema)
+        emitted_ids = {init_event["id"]}
+
+        # 2. Prepare input state with ephemeral reset
+        input_state: Dict[str, Any] = {
+            "thread_id": thread_id,
+            "user_message": message,
+            "run_id": run_id,
+            "events": [init_event],
+            "search_result": None,
+            "detail_result": None,
+            "comparison_result": None,
+            "relaxation_options": [],
+            "needs_clarification": False,
+            "clarification_question": None,
+            "final_response_text": None,
+            "status": "extracting",
+            "error": None,
+        }
+
+        if current_filters:
+            input_state["canonical_filters"] = current_filters.model_dump()
+            input_state["active_campus_id"] = current_filters.campus_id
+
+        config = {"configurable": {"thread_id": thread_id}}
+
+        try:
+            # 3. Stream graph execution step by step
+            for step_update in self.graph.stream(input_state, config=config, stream_mode="updates"):
+                for node_name, node_output in step_update.items():
+                    if isinstance(node_output, dict) and "events" in node_output:
+                        for evt in node_output["events"]:
+                            evt_id = evt.get("id")
+                            if evt_id and evt_id not in emitted_ids:
+                                emitted_ids.add(evt_id)
+                                schema = EventMapper.to_schema(evt, run_id)
+                                yield EventMapper.format_sse("agent_event", schema)
+
+            # 4. Get final state and yield completed reply
+            snapshot = self.graph.get_state(config)
+            final_state = snapshot.values if snapshot else {}
+            response_dto = self._build_response(
+                final_state=final_state,
+                thread_id=thread_id,
+                run_id=run_id,
+                current_filters=current_filters,
+                now=now,
+            )
+            yield EventMapper.format_sse("agent_reply", response_dto)
+
+        except Exception as e:
+            yield EventMapper.format_sse("agent_error", {"detail": str(e), "runId": run_id})
+
+    def get_conversation(self, thread_id: str) -> Dict[str, Any]:
+        """Retrieve conversation snapshot and history from checkpoint memory."""
+        config = {"configurable": {"thread_id": thread_id}}
+        snapshot = self.graph.get_state(config)
+        state = snapshot.values if snapshot else {}
+        return {
+            "threadId": thread_id,
+            "canonicalFilters": state.get("canonical_filters", {}),
+            "activeCampusId": state.get("active_campus_id"),
+            "messages": state.get("messages", []),
+            "lastResultRoomIds": state.get("last_result_room_ids", []),
+        }
+
+    def clear_conversation(self, thread_id: str) -> bool:
+        """Reset conversation state in checkpointer."""
+        config = {"configurable": {"thread_id": thread_id}}
+        self.graph.update_state(
+            config,
+            {
+                "messages": [],
+                "canonical_filters": {},
+                "active_campus_id": None,
+                "last_result_room_ids": [],
+            },
+        )
+        return True
 
 
 agent_service = AgentService()

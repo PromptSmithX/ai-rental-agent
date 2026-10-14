@@ -123,7 +123,17 @@ def generate_response_node(state: AgentGraphState) -> Dict[str, Any]:
         },
     })
 
+    user_msg_item = {
+        "id": f"user-{run_id}",
+        "threadId": thread_id,
+        "role": "user",
+        "content": user_msg,
+        "createdAt": now,
+        "referencedRoomIds": [],
+    }
+
     current_messages = list(state.get("messages", []))
+    current_messages.append(user_msg_item)
     current_messages.append(assistant_msg)
 
     return {

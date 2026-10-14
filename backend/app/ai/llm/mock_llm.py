@@ -179,12 +179,14 @@ class MockExtractor:
             campus_query = "bách khoa"
 
         # Price extraction
-        if "dưới 3 triệu" in norm or "3tr" in norm or "dưới 3tr" in norm or "3 triệu" in norm:
+        if "dưới 3,5 triệu" in norm or "dưới 3.5 triệu" in norm or "3.5 triệu" in norm or "3,5 triệu" in norm or "3tr5" in norm:
+            ops.append(FilterOperation(op=FilterOpType.SET, field="max_price_vnd", value=3500000))
+        elif "dưới 3 triệu" in norm or "3tr" in norm or "dưới 3tr" in norm or "3 triệu" in norm:
             ops.append(FilterOperation(op=FilterOpType.SET, field="max_price_vnd", value=3000000))
-        elif "dưới 2 triệu" in norm or "2tr" in norm:
-            ops.append(FilterOperation(op=FilterOpType.SET, field="max_price_vnd", value=2000000))
-        elif "dưới 2,5 triệu" in norm or "2tr5" in norm:
+        elif "dưới 2.5 triệu" in norm or "dưới 2,5 triệu" in norm or "2.5 triệu" in norm or "2,5 triệu" in norm or "2tr5" in norm:
             ops.append(FilterOperation(op=FilterOpType.SET, field="max_price_vnd", value=2500000))
+        elif "dưới 2 triệu" in norm or "2tr" in norm or "2 triệu" in norm:
+            ops.append(FilterOperation(op=FilterOpType.SET, field="max_price_vnd", value=2000000))
 
         # Distance extraction
         if "2 km" in norm or "2km" in norm:
