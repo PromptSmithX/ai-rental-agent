@@ -57,7 +57,15 @@ def compare_rooms(
         }
 
     # Deterministic summary
-    if len(found_rooms) >= 2:
+    if len(found_rooms) >= 3:
+        r1, r2, r3 = found_rooms[0], found_rooms[1], found_rooms[2]
+        p1 = f"{r1.price_monthly_vnd / 1_000_000:.1f}tr"
+        p2 = f"{r2.price_monthly_vnd / 1_000_000:.1f}tr"
+        p3 = f"{r3.price_monthly_vnd / 1_000_000:.1f}tr"
+        summary = (
+            f"Bảng so sánh giữa 3 phòng: {r1.id} ({p1}), {r2.id} ({p2}) và {r3.id} ({p3})."
+        )
+    elif len(found_rooms) == 2:
         r1, r2 = found_rooms[0], found_rooms[1]
         p1 = f"{r1.price_monthly_vnd / 1_000_000:.1f}tr"
         p2 = f"{r2.price_monthly_vnd / 1_000_000:.1f}tr"
@@ -69,6 +77,9 @@ def compare_rooms(
         summary = f"Chỉ tìm thấy thông tin cho 1 phòng: {found_rooms[0].id}."
     else:
         summary = "Không tìm thấy thông tin của các phòng được yêu cầu so sánh."
+
+    if missing_ids:
+        summary += f" Lưu ý: Không tìm thấy phòng {', '.join(missing_ids)}."
 
     return RoomComparisonResult(
         rooms=found_rooms,

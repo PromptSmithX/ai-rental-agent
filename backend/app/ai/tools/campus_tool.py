@@ -20,10 +20,10 @@ def resolve_campus(query: Optional[str], repo: BaseAgentRoomRepository) -> Campu
     Never invents coordinates. If multiple campuses match or query is ambiguous,
     flags is_ambiguous=True with candidate campuses.
     """
-    if not query or not query.strip():
-        return CampusResolutionResult(is_ambiguous=True)
-
     campuses = repo.list_campuses()
+    if not query or not query.strip():
+        return CampusResolutionResult(is_ambiguous=True, candidates=campuses[:3])
+
     q = query.lower().strip()
 
     # 1. Direct ID match
@@ -37,18 +37,9 @@ def resolve_campus(query: Optional[str], repo: BaseAgentRoomRepository) -> Campu
                 is_ambiguous=False,
             )
 
-    # 2. Specific alias rules
-    if "hà nội" in q or "bkhn" in q or "hust" in q:
-        target = next((c for c in campuses if c.id == "hust-hanoi"), None)
-        if target:
-            return CampusResolutionResult(
-                campus_id=target.id,
-                canonical_name=f"{target.university_name} - {target.campus_name}",
-                latitude=target.latitude,
-                longitude=target.longitude,
-            )
-
-    if "quốc gia hà nội" in q or "qghn" in q or "vnu" in q:
+    # 2. Specific alias rules with high precision
+    # VNU Hanoi
+    if "quốc gia hà nội" in q or "qghn" in q or "đhqghn" in q or "vnu" in q or ("quốc gia" in q and "hà nội" in q) or "xuân thủy" in q:
         target = next((c for c in campuses if c.id == "vnu-hanoi"), None)
         if target:
             return CampusResolutionResult(
@@ -58,7 +49,8 @@ def resolve_campus(query: Optional[str], repo: BaseAgentRoomRepository) -> Campu
                 longitude=target.longitude,
             )
 
-    if "kinh tế quốc dân" in q or "neu" in q:
+    # NEU Hanoi
+    if "kinh tế quốc dân" in q or "ktqd" in q or "đhktqd" in q or "neu" in q or ("kinh tế" in q and "giải phóng" in q):
         target = next((c for c in campuses if c.id == "neu-hanoi"), None)
         if target:
             return CampusResolutionResult(
@@ -68,7 +60,19 @@ def resolve_campus(query: Optional[str], repo: BaseAgentRoomRepository) -> Campu
                 longitude=target.longitude,
             )
 
-    if "lý thường kiệt" in q or "ltk" in q or ("bách khoa" in q and "quận 10" in q):
+    # HUST Hanoi
+    if ("bách khoa" in q and "hà nội" in q) or "bkhn" in q or "hust" in q or "đhbkhn" in q or ("bách khoa" in q and "hai bà trưng" in q):
+        target = next((c for c in campuses if c.id == "hust-hanoi"), None)
+        if target:
+            return CampusResolutionResult(
+                campus_id=target.id,
+                canonical_name=f"{target.university_name} - {target.campus_name}",
+                latitude=target.latitude,
+                longitude=target.longitude,
+            )
+
+    # HCMUT - Lý Thường Kiệt
+    if "lý thường kiệt" in q or "ltk" in q or ("bách khoa" in q and ("quận 10" in q or "q10" in q or "hcm" in q or "tphcm" in q or "sài gòn" in q)) or "hcmut-ltk" in q or ("hcmut" in q and "dĩ an" not in q):
         target = next((c for c in campuses if c.id == "hcmut-ltk"), None)
         if target:
             return CampusResolutionResult(
@@ -78,7 +82,8 @@ def resolve_campus(query: Optional[str], repo: BaseAgentRoomRepository) -> Campu
                 longitude=target.longitude,
             )
 
-    if "dĩ an" in q or "thủ đức" in q or ("bách khoa" in q and "bình dương" in q):
+    # HCMUT - Dĩ An
+    if "dĩ an" in q or "thủ đức" in q or ("bách khoa" in q and "bình dương" in q) or "khu b" in q or "làng đại học" in q or "hcmut-da" in q:
         target = next((c for c in campuses if c.id == "hcmut-da"), None)
         if target:
             return CampusResolutionResult(

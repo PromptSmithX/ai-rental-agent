@@ -11,8 +11,9 @@ from app.ai.repositories.base import BaseAgentRoomRepository
 class DatabaseAgentRoomRepository(BaseAgentRoomRepository):
     """Adapts existing SQLAlchemy RoomService & CampusService to BaseAgentRoomRepository."""
 
-    def __init__(self, db: Session):
+    def __init__(self, db: Session, mode: str = "postgres"):
         self.db = db
+        self.mode = mode
         self.campus_service = CampusService(db)
         self.room_service = RoomService(db)
 
