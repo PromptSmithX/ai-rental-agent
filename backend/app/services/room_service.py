@@ -9,6 +9,7 @@ from app.repositories.campus_repository import CampusRepository
 from app.schemas.room import RoomView, RoomDetailResponse
 from app.schemas.search import SearchFilters, RoomSearchHit, SearchResult
 from app.services.ranking import evaluate_room_hit
+from app.config import settings
 
 
 class RoomService:
@@ -89,5 +90,5 @@ class RoomService:
             hits=hits,
             total_matched=len(hits),
             searched_at=datetime.now(timezone.utc),
-            dataset_mode="demo",
+            dataset_mode=settings.DATASET_MODE,
         )

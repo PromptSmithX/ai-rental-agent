@@ -1,6 +1,6 @@
 export type LocationAccuracy = 'verified' | 'approximate' | 'unknown';
 export type ListingStatus = 'unknown' | 'available' | 'unavailable';
-export type SourceKind = 'demo' | 'authorized_listing' | 'owner_submitted';
+export type SourceKind = 'demo' | 'authorized_listing' | 'owner_submitted' | 'crawled';
 export type Amenity =
   | 'air_conditioner'
   | 'wifi'

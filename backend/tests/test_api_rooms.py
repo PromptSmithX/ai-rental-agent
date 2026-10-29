@@ -7,7 +7,7 @@ def test_health_check(client: TestClient):
     data = response.json()
     assert data["status"] == "ok"
     assert data["database"] == "connected"
-    assert data["dataset_mode"] == "demo"
+    assert data["dataset_mode"] == "live"
 
 
 def test_list_all_rooms(client: TestClient):
@@ -58,7 +58,7 @@ def test_structured_search_s01(client: TestClient):
     assert "hits" in result
     assert "totalMatched" in result
     assert "appliedFilters" in result
-    assert result["datasetMode"] == "demo"
+    assert result["datasetMode"] == "live"
     assert result["totalMatched"] > 0
 
     hit_ids = [h["roomId"] for h in result["hits"]]
