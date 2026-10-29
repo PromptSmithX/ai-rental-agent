@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from typing import Optional, List, Dict, Any, Tuple
+from typing import Optional, List, Dict, Any, Tuple, Callable
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
@@ -266,13 +266,22 @@ class IngestionService:
         max_listings: Optional[int] = None,
         resume: bool = False,
         permission_status: str = "allowed",
+        progress_callback: Optional[Callable[[Dict[str, Any]], None]] = None,
     ) -> IngestionRun:
         """
         Execute bounded crawl:
         - Discover Hanoi detail links across pagination
         - Skip already processed if resume=True
         - Fetch & persist detail pages up to max_listings
+        - Emit progress events via progress_callback (optional)
+        - Ctrl+C (KeyboardInterrupt) stops gracefully: already-persisted listings
+          are kept, run is marked "interrupted", and the run is returned so the
+          caller can show resume instructions.
         """
+        def _emit(event: Dict[str, Any]) -> None:
+            if progress_callback:
+                progress_callback(event)
+
         run = self.create_or_get_run(run_id=run_id if resume else None)
         limit = max_listings or self.config.max_listings
 
@@ -320,6 +329,12 @@ class IngestionService:
                                 if not self.config.page_limit or len(index_pages) < self.config.page_limit:
                                     index_pages.append(np)
 
+                    _emit({
+                        "event": "discovery",
+                        "discovered": run.discovered_count,
+                        "pages_visited": current_page_idx,
+                    })
+
                 except CollectorError as c_err:
                     self.record_error(
                         run,
@@ -335,12 +350,25 @@ class IngestionService:
             self.db.commit()
 
             # 2. Fetch and persist details
-            for detail_url in discovered_detail_urls:
-                if resume and detail_url in existing_urls:
-                    continue
+            total = len(discovered_detail_urls)
+            _emit({"event": "detail_start", "total": total})
 
+            for i, detail_url in enumerate(discovered_detail_urls, 1):
                 if limit and run.fetched_count >= limit:
+                    _emit({
+                        "event": "detail_done", "index": i, "total": total,
+                        "fetched": run.fetched_count, "failed": run.failed_count,
+                        "skipped": True, "url": detail_url,
+                    })
                     break
+
+                if resume and detail_url in existing_urls:
+                    _emit({
+                        "event": "detail_done", "index": i, "total": total,
+                        "fetched": run.fetched_count, "failed": run.failed_count,
+                        "skipped": True, "url": detail_url,
+                    })
+                    continue
 
                 success = self.process_detail_url(
                     url=detail_url,
@@ -349,9 +377,30 @@ class IngestionService:
                     permission_status=permission_status,
                 )
 
+                _emit({
+                    "event": "detail_done", "index": i, "total": total,
+                    "fetched": run.fetched_count, "failed": run.failed_count,
+                    "skipped": False, "url": detail_url, "success": success,
+                })
+
             run.status = "completed"
             run.finished_at = datetime.now(timezone.utc)
             self.db.commit()
+            return run
+
+        except KeyboardInterrupt:
+            # Graceful checkpoint: per-listing commits already persisted the work
+            # done so far. Mark the run interrupted and return it (do not re-raise)
+            # so the caller can report progress and resume instructions.
+            run.status = "interrupted"
+            run.finished_at = datetime.now(timezone.utc)
+            self.db.commit()
+            _emit({
+                "event": "interrupted",
+                "run_id": str(run.id),
+                "fetched": run.fetched_count,
+                "failed": run.failed_count,
+            })
             return run
 
         except Exception as exc:

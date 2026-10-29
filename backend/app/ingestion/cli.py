@@ -1,15 +1,79 @@
 import argparse
 import sys
 import uuid
-from typing import Optional
+from typing import Any, Callable, Dict, Optional
 
 from app.database import SessionLocal
 from app.ingestion.config import IngestionConfig
 from app.ingestion.service import IngestionService
 from app.ingestion.profiling import DataProfiler
 
+try:
+    from tqdm import tqdm
+except ImportError:  # pragma: no cover - fallback when tqdm is not installed
+    tqdm = None
+
+
+def make_progress(quiet: bool) -> Callable[[Dict[str, Any]], None]:
+    """Build a progress callback that renders crawl progress.
+
+    Uses a tqdm bar for the detail-fetch phase when available; otherwise falls
+    back to plain flushed prints so it never crashes if tqdm is missing.
+    """
+    state: Dict[str, Any] = {"bar": None}
+
+    def _log(msg: str) -> None:
+        if state["bar"] is not None:
+            state["bar"].write(msg)
+        else:
+            print(msg, flush=True)
+
+    def cb(event: Dict[str, Any]) -> None:
+        if quiet:
+            return
+        kind = event.get("event")
+
+        if kind == "discovery":
+            print(
+                f"\r  Đang dò danh sách… đã thấy {event['discovered']} tin "
+                f"(trang {event['pages_visited']})",
+                end="",
+                flush=True,
+            )
+        elif kind == "detail_start":
+            total = event.get("total", 0)
+            print(f"\n  Bắt đầu cào {total} tin chi tiết…", flush=True)
+            if tqdm is not None and total > 0:
+                state["bar"] = tqdm(total=total, desc="Cào chi tiết", unit="tin")
+        elif kind == "detail_done":
+            bar = state["bar"]
+            if bar is not None:
+                bar.update(1)
+                bar.set_postfix(ok=event.get("fetched", 0), loi=event.get("failed", 0))
+            else:
+                tag = "skip" if event.get("skipped") else "ok"
+                print(
+                    f"  [{event.get('index')}/{event.get('total')}] {tag} "
+                    f"(ok={event.get('fetched', 0)}, lỗi={event.get('failed', 0)})",
+                    flush=True,
+                )
+        elif kind == "interrupted":
+            if state["bar"] is not None:
+                state["bar"].close()
+                state["bar"] = None
+            _log(f"\n  Đã dừng (Ctrl+C). Đã cào {event.get('fetched', 0)} tin trước khi dừng.")
+
+    return cb
+
 
 def main():
+    # Vietnamese output breaks on Windows consoles defaulting to cp1252; force UTF-8.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
     parser = argparse.ArgumentParser(description="AI Rental Copilot - Data Ingestion v1 CLI")
     parser.add_argument("--scope", type=str, default="hanoi", help="Crawl scope (default: hanoi)")
     parser.add_argument("--max-listings", type=int, default=None, help="Maximum detail listings to fetch")
@@ -22,6 +86,7 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Discover URLs without database persistence")
     parser.add_argument("--profile-only", action="store_true", help="Generate quality profiling reports only")
     parser.add_argument("--output-dir", type=str, default="reports", help="Directory for profiling reports")
+    parser.add_argument("--quiet", action="store_true", help="Disable the live progress bar (clean logs)")
 
     args = parser.parse_args()
 
@@ -74,12 +139,27 @@ def main():
             max_listings=args.max_listings,
             resume=args.resume,
             permission_status="allowed" if images_enabled else "unknown",
+            progress_callback=make_progress(args.quiet),
         )
-        print(f"Ingestion run finished with status: {run.status}")
+        print(f"\nIngestion run finished with status: {run.status}")
         print(f"- Discovered: {run.discovered_count}")
         print(f"- Fetched: {run.fetched_count}")
         print(f"- Changed: {run.changed_count}")
         print(f"- Failed: {run.failed_count}")
+
+        if run.status == "interrupted":
+            resume_cmd = (
+                f"python -m app.ingestion.cli --scope {args.scope} "
+                f"{'--no-images' if not images_enabled else '--images'} "
+                f"--resume --run-id {run.id}"
+            )
+            if args.max_listings:
+                resume_cmd += f" --max-listings {args.max_listings}"
+            if args.page_limit:
+                resume_cmd += f" --page-limit {args.page_limit}"
+            print("\nĐã dừng giữa chừng (checkpoint). Phần đã cào đã được lưu.")
+            print("Chạy lệnh sau để cào tiếp phần còn lại:")
+            print(f"  {resume_cmd}")
 
         # Generate reports after run
         profiler = DataProfiler(db=db, output_dir=args.output_dir)
