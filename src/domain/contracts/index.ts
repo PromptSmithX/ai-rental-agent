@@ -55,6 +55,9 @@ export interface SearchFilterPatch extends Partial<Omit<SearchFilters, 'required
 
 export interface RoomSearchHit {
   roomId: string;
+  title?: string;
+  priceMonthlyVnd?: number;
+  addressLabel?: string;
   distanceKm: number | null;
   rankingScore: number | null; // null if not computed
   matchReasons: string[];

@@ -45,6 +45,9 @@ class OpenAIResponseGenerator:
                 "top_hits": [
                     {
                         "room_id": hit.room_id,
+                        "title": hit.title,
+                        "price_monthly_vnd": hit.price_monthly_vnd,
+                        "address_label": hit.address_label,
                         "distance_km": hit.distance_km,
                         "match_reasons": hit.match_reasons,
                         "caveats": hit.caveats,

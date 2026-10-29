@@ -170,6 +170,9 @@ class MockHanoiRepository(BaseAgentRoomRepository):
             hits.append(
                 RoomSearchHit(
                     room_id=room.id,
+                    title=room.title,
+                    price_monthly_vnd=room.price_monthly_vnd,
+                    address_label=room.address_label,
                     distance_km=dist_km,
                     ranking_score=ranking_score,
                     match_reasons=reasons,

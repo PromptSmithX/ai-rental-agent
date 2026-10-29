@@ -112,6 +112,9 @@ export function executeSearch({ rooms, campuses, filters }: ExecuteSearchOptions
 
     hits.push({
       roomId: room.id,
+      title: room.title,
+      priceMonthlyVnd: room.priceMonthlyVnd,
+      addressLabel: room.addressLabel,
       distanceKm,
       rankingScore,
       matchReasons,

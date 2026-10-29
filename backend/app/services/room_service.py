@@ -63,6 +63,9 @@ class RoomService:
             hits.append(
                 RoomSearchHit(
                     room_id=room.id,
+                    title=room.title,
+                    price_monthly_vnd=room.price_monthly_vnd,
+                    address_label=room.address_label,
                     distance_km=distance_km,
                     ranking_score=ranking_score,
                     match_reasons=match_reasons,

@@ -17,6 +17,9 @@ class SearchFilters(CamelModel):
 
 class RoomSearchHit(CamelModel):
     room_id: str
+    title: Optional[str] = None
+    price_monthly_vnd: Optional[int] = None
+    address_label: Optional[str] = None
     distance_km: Optional[float] = None
     ranking_score: Optional[float] = None
     match_reasons: List[str] = Field(default_factory=list)
