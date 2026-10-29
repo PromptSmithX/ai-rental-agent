@@ -52,7 +52,7 @@ def test_rate_limit_error_mapping():
     assert mock_call.call_count == 2
 
 
-def test_extractor_node_graceful_fallback_on_openai_error():
+def test_extractor_node_raises_on_openai_error():
     # Setup mock extractor that raises OpenAITimeoutException
     failing_extractor = MagicMock()
     failing_extractor.extract.side_effect = OpenAITimeoutException("Timeout calling OpenAI")
@@ -67,18 +67,14 @@ def test_extractor_node_graceful_fallback_on_openai_error():
             "last_result_room_ids": [],
         }
 
-        # Should NOT crash: gracefully uses MockExtractor and adds warning event
-        res = understand_request_node(state)
-
-        assert res["intent"] == "search"
-        event_types = [e["type"] for e in res["events"]]
-        assert "tool_failed" in event_types
-        assert "preferences_extracted" in event_types
+        # Must surface the failure instead of silently degrading to mock output.
+        with pytest.raises(OpenAITimeoutException):
+            understand_request_node(state)
     finally:
         set_extractor(None)
 
 
-def test_generator_node_graceful_fallback_on_openai_error():
+def test_generator_node_raises_on_openai_error():
     # Setup mock generator that raises OpenAIProviderException
     failing_gen = MagicMock()
     failing_gen.generate.side_effect = OpenAIProviderException("API 500 error")
@@ -95,14 +91,8 @@ def test_generator_node_graceful_fallback_on_openai_error():
             "messages": [],
         }
 
-        # Should NOT crash: gracefully uses MockResponseGenerator and adds warning event
-        res = generate_response_node(state)
-
-        assert res["status"] == "completed"
-        assert res["final_response_text"] is not None
-        event_types = [e["type"] for e in res["events"]]
-        assert "tool_failed" in event_types
-        assert "response_ready" in event_types
-        assert "run_completed" in event_types
+        # Must surface the failure instead of silently degrading to mock output.
+        with pytest.raises(OpenAIProviderException):
+            generate_response_node(state)
     finally:
         set_response_generator(None)

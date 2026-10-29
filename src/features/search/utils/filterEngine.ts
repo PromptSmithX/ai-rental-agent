@@ -142,6 +142,6 @@ export function executeSearch({ rooms, campuses, filters }: ExecuteSearchOptions
     hits,
     totalMatched: hits.length,
     searchedAt: new Date().toISOString(),
-    datasetMode: 'demo',
+    datasetMode: 'live',
   };
 }

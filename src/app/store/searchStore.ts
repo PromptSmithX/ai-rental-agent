@@ -25,6 +25,10 @@ export interface SearchStoreState {
   messages: ChatMessage[];
   events: AgentEvent[];
   runStatus: AgentRunStatus;
+  /** Whether the most recent agent reply came from a simulated/mock LLM rather than
+   * the real backend. Defaults to true until a real reply proves otherwise, so the UI
+   * never claims a real result before one has actually happened. */
+  isSimulation: boolean;
 
   // Cached fixture collections
   allRooms: RoomView[];
@@ -56,6 +60,7 @@ export const useSearchStore = create<SearchStoreState>((set, get) => ({
   messages: [],
   events: [],
   runStatus: 'idle',
+  isSimulation: true,
 
   allRooms: [],
   allCampuses: [],
@@ -148,6 +153,7 @@ export const useSearchStore = create<SearchStoreState>((set, get) => ({
         messages: [...state.messages, reply.message],
         events: reply.events,
         runStatus: reply.status,
+        isSimulation: reply.isSimulation,
       }));
     } catch {
       set({

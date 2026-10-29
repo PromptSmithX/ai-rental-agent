@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from typing import Any, Dict
+from app.ai.llm.factory import is_simulation_mode
 from app.ai.schemas.state import AgentGraphState
 from app.ai.dependencies import get_agent_repository
 from app.ai.tools.detail_tool import get_room_details
@@ -30,7 +31,7 @@ def room_detail_node(state: AgentGraphState) -> Dict[str, Any]:
         "label": f"Xem chi tiết phòng {room_id}" if room_id else "Không tìm thấy phòng",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "durationMs": 35,
-        "isSimulation": True,
+        "isSimulation": is_simulation_mode(),
         "details": {
             "roomId": room_id,
             "found": detail is not None,

@@ -75,6 +75,14 @@ htmlcov/
 pgdata/
 
 # ==========================================
+# Crawled / Ingestion Data (regenerated, not source)
+# ==========================================
+backend/storage/
+backend/reports/
+backend/crawled_summary.json
+backend/latest_sample.json
+
+# ==========================================
 # Logs
 # ==========================================
 logs/

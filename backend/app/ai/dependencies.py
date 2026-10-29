@@ -23,17 +23,15 @@ def get_agent_repository(mode: Optional[str] = None) -> BaseAgentRoomRepository:
     if chosen_mode in ("mock_hanoi", "mock_hybrid"):
         _repository_instance = MockHanoiRepository(mode=chosen_mode)
     elif chosen_mode in ("postgres", "database", "db"):
-        try:
-            from app.database import SessionLocal
-            from app.ai.repositories.db_repository import DatabaseAgentRoomRepository
-            db = SessionLocal()
-            _repository_instance = DatabaseAgentRoomRepository(db, mode=chosen_mode)
-        except Exception:
-            # Fallback to mock_hybrid if database is not reachable
-            _repository_instance = MockHanoiRepository(mode="mock_hybrid")
+        from app.database import SessionLocal
+        from app.ai.repositories.db_repository import DatabaseAgentRoomRepository
+        db = SessionLocal()
+        _repository_instance = DatabaseAgentRoomRepository(db, mode=chosen_mode)
     else:
-        # Default to hybrid mock for safety when DB not running
-        _repository_instance = MockHanoiRepository(mode="mock_hybrid")
+        raise ValueError(
+            f"Unknown AGENT_REPOSITORY_MODE '{chosen_mode}'. "
+            "Expected one of: mock_hanoi, mock_hybrid, postgres, database, db."
+        )
 
     return _repository_instance
 

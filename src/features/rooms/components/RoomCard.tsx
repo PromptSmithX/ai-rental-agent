@@ -131,7 +131,9 @@ export const RoomCard: React.FC<RoomCardProps> = ({ room, variant = 'card' }) =>
           <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 p-2 text-center">
             <ImageOff className="w-8 h-8 mb-1 text-slate-400" />
             <span className="text-xs font-medium">Chưa có ảnh</span>
-            <span className="text-[10px] text-slate-400">Tin mẫu mô phỏng</span>
+            {room.sourceKind === 'demo' && (
+              <span className="text-[10px] text-slate-400">Tin mẫu mô phỏng</span>
+            )}
           </div>
         )}
 

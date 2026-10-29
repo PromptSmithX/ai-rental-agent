@@ -2,9 +2,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict
 from app.schemas.search import SearchFilters
 from app.ai.schemas.state import AgentGraphState
-from app.ai.llm.factory import get_extractor
-from app.ai.llm.client import OpenAIProviderException, OpenAITimeoutException, OpenAIConfigurationError
-from app.ai.llm.mock_llm import MockExtractor
+from app.ai.llm.factory import get_extractor, is_simulation_mode
 
 
 def understand_request_node(state: AgentGraphState) -> Dict[str, Any]:
@@ -19,30 +17,11 @@ def understand_request_node(state: AgentGraphState) -> Dict[str, Any]:
     curr_filters = SearchFilters(**canonical_filters_dict) if canonical_filters_dict else SearchFilters()
 
     extractor = get_extractor()
-    try:
-        extracted = extractor.extract(
-            user_message=user_msg,
-            current_filters=curr_filters,
-            last_result_room_ids=last_hits,
-        )
-    except (OpenAITimeoutException, OpenAIProviderException, OpenAIConfigurationError) as e:
-        # Graceful fallback: log sanitized event and use mock extractor
-        events.append({
-            "id": f"evt-{run_id}-extract-warning",
-            "runId": run_id,
-            "type": "tool_failed",
-            "status": "error",
-            "label": "OpenAI gặp sự cố, tự động dùng bộ trích xuất dự phòng",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "durationMs": 10,
-            "isSimulation": True,
-            "details": {"error": str(e)},
-        })
-        extracted = MockExtractor.extract(
-            user_message=user_msg,
-            current_filters=curr_filters,
-            last_result_room_ids=last_hits,
-        )
+    extracted = extractor.extract(
+        user_message=user_msg,
+        current_filters=curr_filters,
+        last_result_room_ids=last_hits,
+    )
 
     events.append({
         "id": f"evt-{run_id}-extract",
@@ -52,7 +31,7 @@ def understand_request_node(state: AgentGraphState) -> Dict[str, Any]:
         "label": "Trích xuất tiêu chí tìm kiếm",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "durationMs": 45,
-        "isSimulation": True,
+        "isSimulation": is_simulation_mode(),
         "details": {
             "intent": extracted.intent.value,
             "operationsCount": len(extracted.operations),
