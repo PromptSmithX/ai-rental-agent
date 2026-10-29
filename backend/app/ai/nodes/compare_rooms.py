@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from typing import Any, Dict, List
+from app.ai.llm.factory import is_simulation_mode
 from app.ai.schemas.state import AgentGraphState
 from app.ai.dependencies import get_agent_repository
 from app.ai.tools.compare_tool import compare_rooms
@@ -37,7 +38,7 @@ def compare_rooms_node(state: AgentGraphState) -> Dict[str, Any]:
         "label": f"So sánh {len(comparison.rooms)} phòng",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "durationMs": 40,
-        "isSimulation": True,
+        "isSimulation": is_simulation_mode(),
         "details": {
             "comparedRoomIds": [r.id for r in comparison.rooms],
         },

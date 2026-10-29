@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     
     # Environment
     ENVIRONMENT: str = "development"
-    DATASET_MODE: str = "demo"
+    DATASET_MODE: str = "live"
 
     model_config = SettingsConfigDict(
         env_file=".env",

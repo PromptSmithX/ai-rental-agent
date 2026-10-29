@@ -3,6 +3,8 @@ from app.domain.enums import Amenity, SortByOption
 from app.schemas.search import SearchFilters
 from app.ai.dependencies import get_agent_repository, set_agent_repository
 from app.ai.repositories.mock_hanoi_repo import MockHanoiRepository
+from app.ai.llm.factory import set_extractor, set_response_generator
+from app.ai.llm.mock_llm import MockExtractor, MockResponseGenerator
 from app.ai.services.agent_service import AgentService
 from app.ai.graph.builder import build_agent_graph
 from langgraph.checkpoint.memory import MemorySaver
@@ -13,6 +15,20 @@ def setup_agent_repo():
     repo = MockHanoiRepository(mode="mock_hybrid")
     set_agent_repository(repo)
     return repo
+
+
+@pytest.fixture(autouse=True)
+def setup_mock_llm():
+    # These tests assert exact MockExtractor/MockResponseGenerator behavior
+    # (scenario keyword matching, canned phrasing) — pin to mock regardless
+    # of the runtime AGENT_LLM_MODE so they stay deterministic and offline.
+    set_extractor(MockExtractor())
+    set_response_generator(MockResponseGenerator())
+    try:
+        yield
+    finally:
+        set_extractor(None)
+        set_response_generator(None)
 
 
 @pytest.fixture

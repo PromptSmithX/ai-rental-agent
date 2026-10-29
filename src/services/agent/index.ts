@@ -1,27 +1,9 @@
-import { AgentReply, RentalAgentService, SearchFilters } from '@/domain/contracts';
-import { matchAndExecuteScenario } from '@/mocks/scenarios';
-import { roomRepository } from '@/services/rooms';
+import { RentalAgentService } from '@/domain/contracts';
+import { MockRentalAgentService } from './mockRentalAgentService';
+import { ApiRentalAgentService } from './apiRentalAgentService';
 
-export class MockRentalAgentService implements RentalAgentService {
-  async run(input: {
-    threadId: string;
-    userMessage: string;
-    currentFilters: SearchFilters;
-  }): Promise<AgentReply> {
-    const rooms = await roomRepository.list();
-    const campuses = await roomRepository.listCampuses();
+export { MockRentalAgentService, ApiRentalAgentService };
 
-    // Brief simulated async reaction (~150ms) to emulate observable event lifecycle
-    await new Promise((resolve) => setTimeout(resolve, 150));
-
-    return matchAndExecuteScenario({
-      threadId: input.threadId,
-      userMessage: input.userMessage,
-      currentFilters: input.currentFilters,
-      rooms,
-      campuses,
-    });
-  }
-}
-
-export const rentalAgentService = new MockRentalAgentService();
+// Use ApiRentalAgentService as default. Errors propagate to the caller (see
+// searchStore.sendUserMessage) instead of silently falling back to Mock.
+export const rentalAgentService: RentalAgentService = new ApiRentalAgentService();

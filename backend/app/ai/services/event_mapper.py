@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional, Union
+from app.ai.llm.factory import is_simulation_mode
 from app.ai.schemas.events import AgentEventSchema, AgentEventType, EventStatus
 
 
@@ -59,7 +60,7 @@ class EventMapper:
             label=raw.get("label", "Tác vụ hệ thống"),
             timestamp=raw.get("timestamp", now),
             duration_ms=raw.get("durationMs", 10),
-            is_simulation=raw.get("isSimulation", True),
+            is_simulation=raw.get("isSimulation", is_simulation_mode()),
             details=cls.sanitize_details(raw.get("details", {})),
         )
 

@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from typing import Any, Dict, Generator, List, Optional
 from app.schemas.search import SearchFilters, SearchResult
+from app.ai.llm.factory import is_simulation_mode
 from app.ai.schemas.events import AgentEventSchema
 from app.ai.schemas.responses import AgentChatResponse, ChatMessageDTO
 from app.ai.services.event_mapper import EventMapper
@@ -71,7 +72,7 @@ class AgentService:
             result=search_res,
             events=events,
             clarification_question=final_state.get("clarification_question"),
-            is_simulation=True,
+            is_simulation=is_simulation_mode(),
         )
 
     def run_turn(
@@ -92,7 +93,7 @@ class AgentService:
             "label": "Khởi tạo tác vụ tìm kiếm",
             "timestamp": now,
             "durationMs": 15,
-            "isSimulation": True,
+            "isSimulation": is_simulation_mode(),
             "details": {
                 "userMessage": message,
                 "threadId": thread_id,
@@ -152,7 +153,7 @@ class AgentService:
             "label": "Khởi tạo tác vụ tìm kiếm",
             "timestamp": now,
             "durationMs": 15,
-            "isSimulation": True,
+            "isSimulation": is_simulation_mode(),
             "details": {
                 "userMessage": message,
                 "threadId": thread_id,

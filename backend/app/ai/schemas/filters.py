@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, List, Optional, Union
 from app.schemas.base import CamelModel
 
 
@@ -16,4 +16,4 @@ class FilterOperation(CamelModel):
     """Explicit filter operation extracted from user utterance."""
     op: FilterOpType
     field: str
-    value: Optional[Any] = None
+    value: Optional[Union[str, int, float, bool, List[str]]] = None

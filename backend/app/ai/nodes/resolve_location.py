@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from typing import Any, Dict
+from app.ai.llm.factory import is_simulation_mode
 from app.ai.schemas.state import AgentGraphState
 from app.ai.dependencies import get_agent_repository
 from app.ai.tools.campus_tool import resolve_campus
@@ -39,7 +40,7 @@ def resolve_location_node(state: AgentGraphState) -> Dict[str, Any]:
         "label": f"Xác định cơ sở: {res.canonical_name}",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "durationMs": 30,
-        "isSimulation": True,
+        "isSimulation": is_simulation_mode(),
         "details": {
             "campusId": res.campus_id,
             "canonicalName": res.canonical_name,

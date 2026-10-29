@@ -13,7 +13,7 @@ const EXAMPLE_PROMPTS = [
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
-  const { sendUserMessage, allCampuses, currentFilters, updateFilters } = useSearchStore();
+  const { sendUserMessage, allCampuses, currentFilters, updateFilters, isSimulation } = useSearchStore();
   const [promptText, setPromptText] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,7 +36,7 @@ export const HomePage: React.FC = () => {
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 pt-12 pb-16 flex flex-col items-center justify-center text-center">
         {/* Badges */}
         <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
-          <SimulationBadge />
+          {isSimulation && <SimulationBadge />}
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-brand-50 text-brand-700 border border-brand-200">
             <Sparkles className="w-3.5 h-3.5" />
             AI-Native Rental Discovery
@@ -95,7 +95,9 @@ export const HomePage: React.FC = () => {
           <div className="flex items-center justify-between pt-2 border-t border-slate-100 px-1">
             <div className="flex items-center gap-2 text-xs text-textMuted">
               <Bot className="w-4 h-4 text-brand-600" />
-              <span className="hidden sm:inline">Phản hồi tự động qua kịch bản mô phỏng</span>
+              <span className="hidden sm:inline">
+                {isSimulation ? 'Phản hồi tự động qua kịch bản mô phỏng' : 'Phản hồi được xử lý bởi AI Agent'}
+              </span>
             </div>
 
             <button
@@ -168,9 +170,11 @@ export const HomePage: React.FC = () => {
       <footer className="w-full py-4 border-t border-borderMuted text-center text-xs text-textMuted bg-surface">
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>AI Rental Copilot — Frontend-first MVP Prototype (2026)</span>
-          <span className="text-amber-700 font-medium bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-            Dữ liệu phòng & AI hoàn toàn mô phỏng (Demo Simulation)
-          </span>
+          {isSimulation && (
+            <span className="text-amber-700 font-medium bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+              Dữ liệu phòng & AI hoàn toàn mô phỏng (Demo Simulation)
+            </span>
+          )}
         </div>
       </footer>
     </div>

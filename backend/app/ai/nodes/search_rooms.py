@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from typing import Any, Dict
 from app.schemas.search import SearchFilters
+from app.ai.llm.factory import is_simulation_mode
 from app.ai.schemas.state import AgentGraphState
 from app.ai.dependencies import get_agent_repository
 from app.ai.tools.search_tool import search_rooms
@@ -26,7 +27,7 @@ def search_rooms_node(state: AgentGraphState) -> Dict[str, Any]:
         "label": f"Tìm thấy {result.total_matched} phòng thỏa tiêu chí",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "durationMs": 55,
-        "isSimulation": True,
+        "isSimulation": is_simulation_mode(),
         "details": {
             "totalMatched": result.total_matched,
             "appliedFilters": filters.model_dump(),
@@ -42,7 +43,7 @@ def search_rooms_node(state: AgentGraphState) -> Dict[str, Any]:
             "label": f"Lọc bán kính đường chim bay ≤ {filters.max_distance_km} km",
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "durationMs": 20,
-            "isSimulation": True,
+            "isSimulation": is_simulation_mode(),
             "details": {
                 "maxDistanceKm": filters.max_distance_km,
             },

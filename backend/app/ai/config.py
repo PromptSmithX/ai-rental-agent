@@ -28,5 +28,10 @@ class AIAgentSettings(BaseSettings):
         extra="ignore",
     )
 
+    @property
+    def IS_SIMULATION(self) -> bool:
+        """True only when the agent is running on the mock LLM (no real OpenAI calls)."""
+        return self.AGENT_LLM_MODE != "openai"
+
 
 ai_settings = AIAgentSettings()

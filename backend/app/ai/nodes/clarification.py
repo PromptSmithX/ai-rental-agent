@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from typing import Any, Dict
+from app.ai.llm.factory import is_simulation_mode
 from app.ai.schemas.state import AgentGraphState
 
 
@@ -17,7 +18,7 @@ def clarification_node(state: AgentGraphState) -> Dict[str, Any]:
         "label": "Yêu cầu làm rõ thông tin",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "durationMs": 20,
-        "isSimulation": True,
+        "isSimulation": is_simulation_mode(),
         "details": {
             "question": q,
         },
