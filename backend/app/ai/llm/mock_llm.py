@@ -269,7 +269,10 @@ class MockResponseGenerator:
                 )
 
             top_hits = search_result.hits[:3]
-            top_ids = ", ".join([h.room_id for h in top_hits])
+            top_ids = ", ".join([
+                f"{h.title} (Mã: {h.room_id})" if getattr(h, "title", None) else h.room_id
+                for h in top_hits
+            ])
             tr_budget = (
                 f" ≤ {filters.max_price_vnd / 1_000_000:.1f}tr"
                 if filters.max_price_vnd else ""
