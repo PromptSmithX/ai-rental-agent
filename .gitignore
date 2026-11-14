@@ -75,12 +75,22 @@ htmlcov/
 pgdata/
 
 # ==========================================
-# Crawled / Ingestion Data (regenerated, not source)
+<<<<<<< HEAD
+# Crawler, Scraper & Data Pipeline Outputs
 # ==========================================
+storage/
 backend/storage/
+reports/
 backend/reports/
 backend/crawled_summary.json
 backend/latest_sample.json
+*.sample.json
+crawled_summary.json
+
+# ==========================================
+# Tool & Code Analysis Artifacts
+# ==========================================
+graphify-out/
 
 # ==========================================
 # Logs
