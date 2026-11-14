@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from app.config import settings
 from app.database import Base
 import app.domain.models  # noqa: F401
+import app.domain.ingestion_models  # noqa: F401
 
 config = context.config
 

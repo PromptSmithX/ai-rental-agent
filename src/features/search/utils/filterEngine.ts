@@ -112,6 +112,9 @@ export function executeSearch({ rooms, campuses, filters }: ExecuteSearchOptions
 
     hits.push({
       roomId: room.id,
+      title: room.title,
+      priceMonthlyVnd: room.priceMonthlyVnd,
+      addressLabel: room.addressLabel,
       distanceKm,
       rankingScore,
       matchReasons,
@@ -142,6 +145,6 @@ export function executeSearch({ rooms, campuses, filters }: ExecuteSearchOptions
     hits,
     totalMatched: hits.length,
     searchedAt: new Date().toISOString(),
-    datasetMode: 'demo',
+    datasetMode: 'live',
   };
 }

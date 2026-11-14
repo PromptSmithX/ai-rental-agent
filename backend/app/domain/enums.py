@@ -17,6 +17,8 @@ class SourceKind(str, Enum):
     DEMO = "demo"
     AUTHORIZED_LISTING = "authorized_listing"
     OWNER_SUBMITTED = "owner_submitted"
+    # Listing imported from a public crawl (tromoi.com); not owner-verified.
+    CRAWLED = "crawled"
 
 
 class Amenity(str, Enum):

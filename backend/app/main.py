@@ -8,6 +8,7 @@ from app.database import engine, Base, SessionLocal
 from app.api.v1.router import api_v1_router
 from app.seeds.seed_data import seed_database
 from app.domain.models import Room
+from app.ai.config import ai_settings
 
 
 @asynccontextmanager
@@ -63,5 +64,9 @@ def root() -> Dict[str, str]:
         "docs": "/docs",
         "health": f"{settings.API_V1_PREFIX}/health",
         "dataset_mode": settings.DATASET_MODE,
-        "note": "AI mô phỏng / Dữ liệu minh họa (Simulated MVP backend)",
+        "note": (
+            "AI mô phỏng / Dữ liệu minh họa (Simulated MVP backend)"
+            if ai_settings.IS_SIMULATION
+            else "AI thật (OpenAI) — dữ liệu phòng vẫn là seed demo tạm thời chờ pipeline crawl"
+        ),
     }

@@ -10,8 +10,15 @@ import {
 import { useSearchStore } from '@/app/store/searchStore';
 
 export const TraceDrawer: React.FC = () => {
-  const { isTraceOpen, setTraceOpen, events, runStatus, currentFilters, lastSearchResult } =
-    useSearchStore();
+  const {
+    isTraceOpen,
+    setTraceOpen,
+    events,
+    runStatus,
+    currentFilters,
+    lastSearchResult,
+    isSimulation,
+  } = useSearchStore();
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'events' | 'json'>('events');
   const [copied, setCopied] = useState(false);
@@ -21,7 +28,7 @@ export const TraceDrawer: React.FC = () => {
   const selectedEvent = events.find((e) => e.id === selectedEventId) ?? events[events.length - 1];
 
   const fullTracePayload = {
-    simulationMode: true,
+    simulationMode: isSimulation,
     runStatus,
     appliedFilters: currentFilters,
     totalHits: lastSearchResult?.totalMatched ?? 0,
@@ -167,8 +174,12 @@ export const TraceDrawer: React.FC = () => {
 
       {/* Footer Notice */}
       <div className="p-3 border-t border-slate-800 bg-slate-900 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
-        <span>* Dữ liệu mô phỏng; không có API key / LLM thật được gọi.</span>
-        <span className="font-mono text-amber-500">v1.0-mock</span>
+        <span>
+          {isSimulation
+            ? '* Dữ liệu mô phỏng; không có API key / LLM thật được gọi.'
+            : '* Phản hồi do AI Agent thật (OpenAI) tạo; dữ liệu phòng vẫn là seed demo chờ pipeline crawl.'}
+        </span>
+        <span className="font-mono text-amber-500">{isSimulation ? 'v1.0-mock' : 'v1.0-live'}</span>
       </div>
     </aside>
   );

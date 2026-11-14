@@ -1,0 +1,30 @@
+{
+  "total_snapshots": 3,
+  "field_counts": {
+    "title_raw": 3,
+    "category_raw": 3,
+    "posted_date_raw": 3,
+    "availability_raw": 3,
+    "units_count_raw": 3,
+    "header_price_raw": 3,
+    "description_price_mentions_raw": 3,
+    "fee_mentions_raw": 3,
+    "address_new_raw": 3,
+    "address_old_raw": 3,
+    "address_description_raw": 2,
+    "map_href_raw": 2,
+    "source_coordinates": 2,
+    "amenity_tags_raw": 3,
+    "target_tenants_raw": 3,
+    "surroundings_tags_raw": 3,
+    "description_text_raw": 3,
+    "images": 3,
+    "video_present": 3
+  },
+  "price_conflicts_count": 3,
+  "missing_fields_count": 0,
+  "duplicate_candidates_count": 0,
+  "errors_count": 0,
+  "explicit_coordinates_count": 2,
+  "explicit_coordinates_pct": "66.67%"
+}

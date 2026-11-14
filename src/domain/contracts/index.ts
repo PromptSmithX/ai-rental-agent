@@ -1,6 +1,6 @@
 export type LocationAccuracy = 'verified' | 'approximate' | 'unknown';
 export type ListingStatus = 'unknown' | 'available' | 'unavailable';
-export type SourceKind = 'demo' | 'authorized_listing' | 'owner_submitted';
+export type SourceKind = 'demo' | 'authorized_listing' | 'owner_submitted' | 'crawled';
 export type Amenity =
   | 'air_conditioner'
   | 'wifi'
@@ -55,6 +55,9 @@ export interface SearchFilterPatch extends Partial<Omit<SearchFilters, 'required
 
 export interface RoomSearchHit {
   roomId: string;
+  title?: string;
+  priceMonthlyVnd?: number;
+  addressLabel?: string;
   distanceKm: number | null;
   rankingScore: number | null; // null if not computed
   matchReasons: string[];

@@ -6,7 +6,8 @@ import { SimulationBadge } from './SimulationBadge';
 
 export const TopNav: React.FC = () => {
   const location = useLocation();
-  const { isTraceOpen, setTraceOpen, currentFilters, allCampuses, updateFilters } = useSearchStore();
+  const { isTraceOpen, setTraceOpen, currentFilters, allCampuses, updateFilters, isSimulation } =
+    useSearchStore();
 
   return (
     <header className="sticky top-0 z-40 w-full h-16 bg-surface/95 backdrop-blur-md border-b border-borderMuted flex items-center justify-between px-4 sm:px-6">
@@ -49,10 +50,12 @@ export const TopNav: React.FC = () => {
         </div>
       </div>
 
-      {/* Center simulation badge */}
-      <div className="hidden lg:block">
-        <SimulationBadge />
-      </div>
+      {/* Center simulation badge — only shown while actually running on mock/simulated AI */}
+      {isSimulation && (
+        <div className="hidden lg:block">
+          <SimulationBadge />
+        </div>
+      )}
 
       {/* Nav Controls */}
       <div className="flex items-center gap-2 sm:gap-3">

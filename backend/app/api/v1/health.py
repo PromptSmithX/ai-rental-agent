@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from app.database import get_db
+from app.config import settings
 
 router = APIRouter()
 
@@ -19,5 +20,5 @@ def health_check(db: Session = Depends(get_db)) -> Dict[str, str]:
         "status": "ok",
         "version": "1.0.0",
         "database": db_status,
-        "dataset_mode": "demo",
+        "dataset_mode": settings.DATASET_MODE,
     }
