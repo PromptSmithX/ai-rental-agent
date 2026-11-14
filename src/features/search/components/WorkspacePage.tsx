@@ -6,7 +6,6 @@ import { ChatPanel } from '@/features/chat/components/ChatPanel';
 import { RoomMap } from '@/features/map/components/RoomMap';
 import { RoomList } from '@/features/rooms/components/RoomList';
 import { RoomCompareModal } from '@/features/rooms/components/RoomCompareModal';
-import { TraceDrawer } from '@/features/trace/components/TraceDrawer';
 
 type DesktopViewMode = 'all' | 'map-list' | 'chat-list';
 
@@ -20,89 +19,91 @@ export const WorkspacePage: React.FC = () => {
 
   if (isLoadingRooms) {
     return (
-      <div className="h-[calc(100vh-4rem)] flex items-center justify-center bg-canvas">
-        <div className="flex flex-col items-center gap-3 text-textMuted">
-          <div className="w-8 h-8 border-3 border-brand-600 border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm font-medium">Đang tải dữ liệu phòng mẫu...</span>
+      <div className="h-[calc(100vh-3.75rem)] flex items-center justify-center bg-[#FAFAFA]">
+        <div className="flex flex-col items-center gap-3 text-slate-500">
+          <div className="w-7 h-7 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-medium tracking-wide">Loading rental listings...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden bg-canvas w-full">
-      {/* Top Extracted Filter Chips & Desktop Layout Controls */}
-      <div className="flex flex-col border-b border-borderMuted bg-white shrink-0">
+    <div className="flex flex-col h-[calc(100vh-3.75rem)] overflow-hidden bg-[#FAFAFA] w-full">
+      {/* Top Filter Chips & Layout Toolbar */}
+      <div className="flex flex-col border-b border-slate-200/90 bg-white shrink-0">
         <FilterChips />
 
         {/* Desktop View Switcher Toolbar */}
-        <div className="hidden md:flex items-center justify-between px-4 py-1.5 bg-slate-50 border-t border-slate-100 text-xs text-slate-600">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-500 text-[11px]">Bố cục làm việc:</span>
-            <div className="flex items-center bg-white p-0.5 rounded-lg border border-slate-200">
+        <div className="hidden md:flex items-center justify-between px-4 py-1.5 bg-[#F8F9FA] border-t border-slate-200/70 text-xs text-slate-600">
+          <div className="flex items-center gap-3">
+            <span className="font-semibold text-slate-500 text-[11px] uppercase tracking-wider">
+              View Mode:
+            </span>
+            <div className="flex items-center bg-white p-0.5 rounded-md border border-slate-200 shadow-2xs">
               <button
                 type="button"
                 onClick={() => setDesktopView('all')}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-medium transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-all ${
                   desktopView === 'all'
-                    ? 'bg-brand-600 text-white shadow-2xs font-bold'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-slate-900 text-white font-semibold shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-950'
                 }`}
-                title="Xem cả 3 cột: Chat + Bản đồ + Danh sách"
+                title="Three-column layout: Conversation + Map + Directory"
               >
                 <Columns3 className="w-3.5 h-3.5" />
-                <span>3 Cột (Đầy đủ)</span>
+                <span>3 Columns</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setDesktopView('map-list')}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-medium transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-all ${
                   desktopView === 'map-list'
-                    ? 'bg-brand-600 text-white shadow-2xs font-bold'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-slate-900 text-white font-semibold shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-950'
                 }`}
-                title="Ẩn khung chat, mở rộng Bản đồ và Danh sách phòng"
+                title="Expand Map and Rental Directory"
               >
                 <Map className="w-3.5 h-3.5" />
-                <span>Bản đồ & Danh sách</span>
+                <span>Map & Directory</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setDesktopView('chat-list')}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-medium transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-all ${
                   desktopView === 'chat-list'
-                    ? 'bg-brand-600 text-white shadow-2xs font-bold'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-slate-900 text-white font-semibold shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-950'
                 }`}
-                title="Ẩn bản đồ, tập trung Chat và duyệt Danh sách"
+                title="Focus on Conversation and Directory list"
               >
                 <SplitSquareVertical className="w-3.5 h-3.5" />
-                <span>Chat & Danh sách</span>
+                <span>Chat & Directory</span>
               </button>
             </div>
           </div>
 
-          <div className="text-[11px] text-slate-500 font-medium">
-            Đang hiển thị <strong className="text-brand-700">{visibleRooms.length}</strong> phòng phù hợp tiêu chí
+          <div className="text-[11px] text-slate-600 font-medium">
+            Showing <strong className="text-slate-900 font-semibold">{visibleRooms.length}</strong> rentals available
           </div>
         </div>
       </div>
 
       {/* Mobile Tab Navigation */}
-      <div className="md:hidden flex border-b border-borderMuted bg-white shrink-0 text-xs font-semibold">
+      <div className="md:hidden flex border-b border-slate-200 bg-white shrink-0 text-xs font-semibold">
         <button
           type="button"
           onClick={() => setMobileTab('chat')}
           className={`flex-1 py-2.5 flex items-center justify-center gap-1.5 border-b-2 transition-colors ${
             mobileTab === 'chat'
-              ? 'border-brand-600 text-brand-700 bg-brand-50/50'
+              ? 'border-slate-900 text-slate-900 bg-slate-50'
               : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}
         >
           <MessageSquare className="w-4 h-4" />
-          <span>Chat AI</span>
+          <span>Chat</span>
         </button>
 
         <button
@@ -110,12 +111,12 @@ export const WorkspacePage: React.FC = () => {
           onClick={() => setMobileTab('map')}
           className={`flex-1 py-2.5 flex items-center justify-center gap-1.5 border-b-2 transition-colors ${
             mobileTab === 'map'
-              ? 'border-brand-600 text-brand-700 bg-brand-50/50'
+              ? 'border-slate-900 text-slate-900 bg-slate-50'
               : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}
         >
           <Map className="w-4 h-4" />
-          <span>Bản đồ ({visibleRooms.length})</span>
+          <span>Map</span>
         </button>
 
         <button
@@ -123,71 +124,67 @@ export const WorkspacePage: React.FC = () => {
           onClick={() => setMobileTab('rooms')}
           className={`flex-1 py-2.5 flex items-center justify-center gap-1.5 border-b-2 transition-colors ${
             mobileTab === 'rooms'
-              ? 'border-brand-600 text-brand-700 bg-brand-50/50'
+              ? 'border-slate-900 text-slate-900 bg-slate-50'
               : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}
         >
           <List className="w-4 h-4" />
-          <span>Danh sách ({visibleRooms.length})</span>
+          <span>Rentals ({visibleRooms.length})</span>
         </button>
       </div>
 
-      {/* Main Workspace Layout */}
-      <div className="flex-1 flex overflow-hidden w-full max-w-full">
-        {/* Left Column: Chat Panel */}
-        <section
-          aria-label="Khung hội thoại với AI"
-          className={`h-full flex flex-col min-w-0 transition-all duration-200 ${
-            // Mobile visibility
-            mobileTab !== 'chat' ? 'hidden md:flex' : 'flex w-full'
-          } ${
-            // Desktop visibility based on view mode
+      {/* Main Responsive Grid Layout */}
+      <div className="flex-1 flex overflow-hidden w-full relative">
+        {/* Left Pane: Chat Panel */}
+        <div
+          className={`h-full border-r border-slate-200/90 transition-all shrink-0 ${
+            // Desktop visibility
             desktopView === 'map-list'
-              ? 'md:hidden'
+              ? 'hidden'
               : desktopView === 'chat-list'
-              ? 'w-full md:w-[460px] lg:w-[500px] shrink-0'
-              : 'w-full md:w-[350px] lg:w-[380px] xl:w-[420px] shrink-0'
+              ? 'w-full md:w-[460px] lg:w-[480px]'
+              : 'w-full md:w-[360px] lg:w-[380px] xl:w-[400px]'
+          } ${
+            // Mobile visibility
+            mobileTab === 'chat' ? 'flex w-full' : 'hidden md:flex'
           }`}
         >
           <ChatPanel />
-        </section>
+        </div>
 
-        {/* Right Area: Map & List */}
-        <section
-          aria-label="Bản đồ và danh sách phòng trọ"
-          className={`flex-1 flex flex-col lg:flex-row h-full overflow-hidden min-w-0 ${
-            mobileTab === 'chat' ? 'hidden md:flex' : 'flex'
+        {/* Center Pane: Interactive Map */}
+        <div
+          className={`h-full flex-1 min-w-[280px] relative transition-all ${
+            // Desktop visibility
+            desktopView === 'chat-list' ? 'hidden' : 'flex'
+          } ${
+            // Mobile visibility
+            mobileTab === 'map' ? 'flex w-full absolute inset-0 z-10' : 'hidden md:flex'
           }`}
         >
-          {/* Map Column/Pane */}
-          <div
-            className={`h-full min-h-[250px] min-w-0 transition-all ${
-              desktopView === 'chat-list' ? 'hidden' : 'block flex-1'
-            } ${mobileTab === 'rooms' ? 'hidden lg:block' : 'block'}`}
-          >
-            <RoomMap rooms={visibleRooms} />
-          </div>
+          <RoomMap rooms={visibleRooms} />
+        </div>
 
-          {/* List Column/Pane */}
-          <div
-            className={`border-l border-borderMuted bg-canvas h-full overflow-hidden shrink-0 flex flex-col min-w-0 ${
-              mobileTab === 'map' ? 'hidden lg:flex' : 'flex'
-            } ${
-              desktopView === 'map-list'
-                ? 'w-full lg:w-[460px] xl:w-[500px]'
-                : desktopView === 'chat-list'
-                ? 'flex-1'
-                : 'w-full lg:w-[340px] xl:w-[380px]'
-            }`}
-          >
-            <RoomList rooms={visibleRooms} />
-          </div>
-        </section>
+        {/* Right Pane: Room Results List */}
+        <div
+          className={`h-full border-l border-slate-200/90 transition-all shrink-0 ${
+            // Desktop width
+            desktopView === 'chat-list'
+              ? 'flex-1 min-w-0'
+              : desktopView === 'map-list'
+              ? 'w-full md:w-[440px] lg:w-[480px]'
+              : 'w-full md:w-[360px] lg:w-[380px] xl:w-[400px]'
+          } ${
+            // Mobile visibility
+            mobileTab === 'rooms' ? 'flex w-full absolute inset-0 z-10' : 'hidden md:flex'
+          }`}
+        >
+          <RoomList rooms={visibleRooms} />
+        </div>
       </div>
 
-      {/* Overlays */}
+      {/* Side-by-side Room Compare Modal */}
       <RoomCompareModal />
-      <TraceDrawer />
     </div>
   );
 };

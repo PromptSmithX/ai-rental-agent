@@ -47,18 +47,20 @@ export const TraceDrawer: React.FC = () => {
       aria-label="Developer Agent Trace Drawer"
     >
       {/* Header */}
-      <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/80 shrink-0">
-        <div className="flex items-center gap-2">
-          <Terminal className="w-5 h-5 text-amber-400" />
+      <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90 shrink-0">
+        <div className="flex items-center gap-2.5">
+          <Terminal className="w-4 h-4 text-amber-400" />
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="font-bold text-sm text-white">Developer Agent Trace</h2>
+              <h2 className="font-bold text-xs text-white uppercase tracking-wider font-mono">
+                Agent Trace Stream
+              </h2>
               <span className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.2 rounded font-mono">
                 SIMULATION
               </span>
             </div>
             <p className="text-[11px] text-slate-400">
-              Kiểm tra luồng sự kiện & dữ liệu của mock agent
+              Observable milestone events and state transitions
             </p>
           </div>
         </div>
@@ -67,9 +69,9 @@ export const TraceDrawer: React.FC = () => {
           type="button"
           onClick={() => setTraceOpen(false)}
           className="text-slate-400 hover:text-white p-1 rounded-md hover:bg-slate-800 transition-colors"
-          aria-label="Đóng Trace drawer"
+          aria-label="Close trace drawer"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
       </div>
 
@@ -96,7 +98,7 @@ export const TraceDrawer: React.FC = () => {
           }`}
         >
           <Code className="w-3.5 h-3.5" />
-          <span>Raw JSON State</span>
+          <span>Raw State JSON</span>
         </button>
       </div>
 
@@ -106,7 +108,7 @@ export const TraceDrawer: React.FC = () => {
           <div>
             {events.length === 0 ? (
               <div className="text-center py-12 text-slate-500 text-xs">
-                Chưa có sự kiện agent nào được ghi lại trong phiên làm việc này.
+                No agent events recorded yet in this active session.
               </div>
             ) : (
               <div className="space-y-2">
@@ -127,7 +129,7 @@ export const TraceDrawer: React.FC = () => {
                           {evt.status === 'success' ? (
                             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                           ) : (
-                            <XCircle className="w-3.5 h-3.5 text-red-400" />
+                            <XCircle className="w-3.5 h-3.5 text-rose-400" />
                           )}
                           <span className="font-semibold text-amber-300">{evt.type}</span>
                         </div>
@@ -138,13 +140,12 @@ export const TraceDrawer: React.FC = () => {
                         )}
                       </div>
 
-                      <div className="text-slate-200 font-medium mb-1">{evt.label}</div>
+                      <div className="text-slate-300 text-xs">{evt.label}</div>
 
-                      {/* Details summary */}
                       {evt.details && Object.keys(evt.details).length > 0 && (
-                        <pre className="p-2 bg-slate-950 rounded text-[10px] text-slate-400 font-mono overflow-x-auto border border-slate-800/80">
+                        <div className="mt-2 p-2 bg-slate-950 rounded border border-slate-800/80 font-mono text-[10px] text-slate-400 overflow-x-auto">
                           {JSON.stringify(evt.details, null, 2)}
-                        </pre>
+                        </div>
                       )}
                     </div>
                   );
@@ -154,32 +155,28 @@ export const TraceDrawer: React.FC = () => {
           </div>
         ) : (
           <div className="relative">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-slate-400 font-mono">Sanitized DTO Inspector</span>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xs font-mono text-slate-400">Canonical Search & Agent State</span>
               <button
                 type="button"
                 onClick={handleCopyJson}
-                className="flex items-center gap-1 text-xs text-amber-400 hover:text-amber-300 font-mono"
+                className="flex items-center gap-1 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-amber-300 font-mono transition-colors"
               >
                 <Copy className="w-3 h-3" />
-                <span>{copied ? 'Đã sao chép!' : 'Sao chép JSON'}</span>
+                <span>{copied ? 'Copied!' : 'Copy JSON'}</span>
               </button>
             </div>
-            <pre className="p-3 bg-slate-900 rounded-lg text-xs text-emerald-400 font-mono overflow-x-auto border border-slate-800 leading-relaxed">
+            <pre className="p-3 bg-slate-900 border border-slate-800 rounded-lg text-slate-300 font-mono text-xs overflow-x-auto leading-relaxed">
               {JSON.stringify(fullTracePayload, null, 2)}
             </pre>
           </div>
         )}
       </div>
 
-      {/* Footer Notice */}
-      <div className="p-3 border-t border-slate-800 bg-slate-900 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
-        <span>
-          {isSimulation
-            ? '* Dữ liệu mô phỏng; không có API key / LLM thật được gọi.'
-            : '* Phản hồi do AI Agent thật (OpenAI) tạo; dữ liệu phòng vẫn là seed demo chờ pipeline crawl.'}
-        </span>
-        <span className="font-mono text-amber-500">{isSimulation ? 'v1.0-mock' : 'v1.0-live'}</span>
+      {/* Footer Info */}
+      <div className="p-3 border-t border-slate-800 bg-slate-900/90 text-[11px] font-mono text-slate-400 flex items-center justify-between shrink-0">
+        <span>Run Status: <strong className="text-amber-400">{runStatus}</strong></span>
+        <span>Simulation: <strong>{String(isSimulation)}</strong></span>
       </div>
     </aside>
   );

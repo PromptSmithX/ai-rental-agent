@@ -1,103 +1,79 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Bot, Bug, Compass, GraduationCap, Home } from 'lucide-react';
+import { Compass, GraduationCap, Home } from 'lucide-react';
 import { useSearchStore } from '@/app/store/searchStore';
-import { SimulationBadge } from './SimulationBadge';
 
 export const TopNav: React.FC = () => {
   const location = useLocation();
-  const { isTraceOpen, setTraceOpen, currentFilters, allCampuses, updateFilters, isSimulation } =
-    useSearchStore();
+  const { currentFilters, allCampuses, updateFilters } = useSearchStore();
 
   return (
-    <header className="sticky top-0 z-40 w-full h-16 bg-surface/95 backdrop-blur-md border-b border-borderMuted flex items-center justify-between px-4 sm:px-6">
-      {/* Brand & Campus */}
-      <div className="flex items-center gap-4">
+    <header className="sticky top-0 z-40 w-full h-15 bg-white/95 backdrop-blur-md border-b border-slate-200/80 flex items-center justify-between px-4 sm:px-6">
+      {/* Brand & Campus Context */}
+      <div className="flex items-center gap-5">
         <Link
           to="/"
-          className="flex items-center gap-2.5 font-bold text-lg text-textPrimary hover:text-brand-600 transition-colors"
-          aria-label="Về trang chủ AI Rental Copilot"
+          className="flex items-center gap-2.5 group transition-colors"
+          aria-label="Return to TroMate Home"
         >
-          <div className="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow-sm">
-            <Bot className="w-5 h-5" />
+          <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold tracking-tight text-sm shadow-xs group-hover:bg-slate-800 transition-colors">
+            TM
           </div>
           <div className="flex flex-col">
-            <span className="leading-tight tracking-tight font-extrabold text-brand-900">
-              AI Rental <span className="text-brand-600">Copilot</span>
+            <span className="text-sm font-bold tracking-tight text-slate-900 leading-none">
+              TroMate <span className="font-normal text-slate-500">Living</span>
             </span>
-            <span className="text-[10px] text-textMuted font-medium uppercase tracking-wider">
-              Sinh viên TP.HCM
+            <span className="text-[10px] text-slate-400 font-medium tracking-wide mt-0.5">
+              Verified Student Rentals
             </span>
           </div>
         </Link>
 
-        {/* Campus Context Dropdown / Indicator */}
-        <div className="hidden md:flex items-center gap-1.5 pl-3 border-l border-borderMuted text-xs text-textMuted">
-          <GraduationCap className="w-4 h-4 text-brand-600" />
+        {/* Campus Context Dropdown */}
+        <div className="hidden md:flex items-center gap-2 pl-4 border-l border-slate-200 text-xs">
+          <GraduationCap className="w-3.5 h-3.5 text-slate-500" />
+          <span className="text-slate-400 font-medium">Campus:</span>
           <select
             value={currentFilters.campusId || ''}
             onChange={(e) => updateFilters({ campusId: e.target.value || null })}
-            className="bg-transparent font-medium text-textPrimary hover:text-brand-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-brand-500 rounded px-1 py-0.5"
-            aria-label="Chọn cơ sở trường"
+            className="bg-transparent font-medium text-slate-800 hover:text-slate-950 cursor-pointer focus:outline-none focus:ring-1 focus:ring-slate-400 rounded px-1.5 py-0.5 border border-transparent hover:border-slate-200 text-xs"
+            aria-label="Select Target University Campus"
           >
-            <option value="">Chưa chọn trường</option>
+            <option value="">All Campuses</option>
             {allCampuses.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.universityName} - {c.campusName}
+                {c.universityName} — {c.campusName}
               </option>
             ))}
           </select>
         </div>
       </div>
 
-      {/* Center simulation badge — only shown while actually running on mock/simulated AI */}
-      {isSimulation && (
-        <div className="hidden lg:block">
-          <SimulationBadge />
-        </div>
-      )}
-
-      {/* Nav Controls */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      {/* Navigation Controls */}
+      <div className="flex items-center gap-2">
         <Link
           to="/"
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
             location.pathname === '/'
-              ? 'bg-brand-50 text-brand-700'
-              : 'text-textMuted hover:bg-slate-100'
+              ? 'bg-slate-100 text-slate-900 font-semibold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
-          <Home className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Trang chủ</span>
+          <Home className="w-3.5 h-3.5 text-slate-500" />
+          <span className="hidden sm:inline">Home</span>
         </Link>
 
         <Link
           to="/workspace"
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs font-medium transition-all ${
             location.pathname.startsWith('/workspace')
-              ? 'bg-brand-600 text-white shadow-xs'
-              : 'text-textMuted hover:bg-slate-100'
+              ? 'bg-slate-900 text-white font-semibold shadow-2xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
           <Compass className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Workspace</span>
+          <span>Browse Rentals</span>
         </Link>
-
-        {/* Dev Trace Toggle */}
-        <button
-          type="button"
-          onClick={() => setTraceOpen(!isTraceOpen)}
-          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-            isTraceOpen
-              ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-              : 'bg-white text-slate-700 border-borderMuted hover:bg-slate-50'
-          }`}
-          title="Bật/Tắt Agent Trace Panel dành cho Developer"
-          aria-label="Bật/Tắt Developer Trace"
-        >
-          <Bug className="w-3.5 h-3.5 text-amber-500" />
-          <span className="hidden sm:inline">Trace</span>
-        </button>
       </div>
     </header>
   );
