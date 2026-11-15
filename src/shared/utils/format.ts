@@ -3,16 +3,16 @@ export { formatDistanceVi } from './distance';
 
 export function formatVnd(amount: number | null): string {
   if (amount === null || amount === undefined) {
-    return 'Contact for price';
+    return 'Chưa rõ';
   }
-  return `${amount.toLocaleString('en-US')} ₫`;
+  return `${amount.toLocaleString('vi-VN')} ₫`;
 }
 
 export function formatPriceMonthly(amount: number | null): string {
   if (amount === null || amount === undefined) {
-    return 'Contact for rent';
+    return 'Liên hệ thuê';
   }
-  return `${amount.toLocaleString('en-US')} ₫/month`;
+  return `${amount.toLocaleString('vi-VN')} ₫/tháng`;
 }
 
 export function formatPriceCompact(amount: number | null): string {
@@ -21,32 +21,32 @@ export function formatPriceCompact(amount: number | null): string {
   }
   if (amount >= 1_000_000) {
     const millions = (amount / 1_000_000).toFixed(1).replace('.0', '');
-    return `${millions}M ₫`;
+    return `${millions.replace('.', ',')} tr`;
   }
-  return `${(amount / 1_000).toLocaleString('en-US')}k ₫`;
+  return `${(amount / 1_000).toLocaleString('vi-VN')}k ₫`;
 }
 
 export function formatArea(areaM2: number | null): string {
   if (areaM2 === null || areaM2 === undefined) {
-    return 'Standard room';
+    return 'Chưa rõ diện tích';
   }
   return `${areaM2} m²`;
 }
 
 export function formatDistanceEn(distanceKm: number | null): string {
   if (distanceKm === null || distanceKm === undefined) {
-    return 'Near campus';
+    return 'Gần trường';
   }
-  return `~${distanceKm} km from campus`;
+  return `~${distanceKm} km từ trường`;
 }
 
 export const AMENITY_LABELS: Record<Amenity, string> = {
-  air_conditioner: 'Air Conditioning',
-  wifi: 'High-speed Wifi',
-  parking: 'Motorbike Parking',
-  private_bathroom: 'Private Bathroom',
-  balcony: 'Balcony',
-  kitchen: 'Kitchen Area',
+  air_conditioner: 'Máy lạnh',
+  wifi: 'Wifi tốc độ cao',
+  parking: 'Chỗ để xe',
+  private_bathroom: 'WC riêng',
+  balcony: 'Ban công thoáng',
+  kitchen: 'Khu bếp',
 };
 
 export const LOCATION_ACCURACY_LABELS: Record<
@@ -54,18 +54,18 @@ export const LOCATION_ACCURACY_LABELS: Record<
   { label: string; badgeClass: string; description: string }
 > = {
   verified: {
-    label: 'Verified Listing',
-    badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-    description: 'Address and listing details verified',
+    label: 'Địa chỉ xác minh',
+    badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
+    description: 'Tọa độ và thông tin phòng đã được kiểm chứng',
   },
   approximate: {
-    label: 'Campus Area',
-    badgeClass: 'bg-slate-100 text-slate-800 border-slate-200',
-    description: 'Located in the immediate campus neighborhood',
+    label: 'Vị trí ước lượng',
+    badgeClass: 'bg-amber-50/90 text-amber-800 border-amber-200/80',
+    description: 'Vị trí lân cận trường, sai số đường chim bay',
   },
   unknown: {
-    label: 'District Area',
-    badgeClass: 'bg-slate-50 text-slate-600 border-slate-200',
-    description: 'Located in university district',
+    label: 'Chưa có tọa độ',
+    badgeClass: 'bg-slate-100 text-slate-600 border-slate-200',
+    description: 'Thuộc khu vực trường học, hiển thị trong danh sách',
   },
 };

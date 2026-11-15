@@ -4,6 +4,5 @@ import { ApiRentalAgentService } from './apiRentalAgentService';
 
 export { MockRentalAgentService, ApiRentalAgentService };
 
-// Use ApiRentalAgentService as default. Errors propagate to the caller (see
-// searchStore.sendUserMessage) instead of silently falling back to Mock.
-export const rentalAgentService: RentalAgentService = new ApiRentalAgentService();
+// Using MockRentalAgentService for lightweight frontend demo and screenshot capture.
+export const rentalAgentService: RentalAgentService = new MockRentalAgentService();

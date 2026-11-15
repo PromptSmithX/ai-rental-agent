@@ -77,6 +77,4 @@ export class ApiRoomRepository implements RoomRepository {
   }
 }
 
-const isTestEnv = typeof process !== 'undefined' && Boolean(process.env?.VITEST);
-
-export const roomRepository = isTestEnv ? new MockRoomRepository() : new ApiRoomRepository();
+export const roomRepository = new MockRoomRepository();
